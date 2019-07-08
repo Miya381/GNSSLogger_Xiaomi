@@ -356,7 +356,7 @@ public class FileLogger implements GnssListener {
                     }
                     if(SettingsFragment.useGL){
                         if(SettingsFragment.CarrierPhase){
-                            currentFileWriter.write("R    4 L1C C1C D1C S1C                                      SYS / # / OBS TYPES ");
+                            currentFileWriter.write("R    4 C1C L1C D1C S1C                                      SYS / # / OBS TYPES ");
                             currentFileWriter.newLine();
                         }else {
                             currentFileWriter.write("R    3 C1C D1C S1C                                          SYS / # / OBS TYPES ");
@@ -383,7 +383,7 @@ public class FileLogger implements GnssListener {
                     }
                     if(SettingsFragment.useBD){
                         if(SettingsFragment.CarrierPhase){
-                            currentFileWriter.write("C    4 L2I C2I D2I S2I                                      SYS / # / OBS TYPES ");
+                            currentFileWriter.write("C    4 C2I L2I D2I S2I                                      SYS / # / OBS TYPES ");
                             currentFileWriter.newLine();
                         }else {
                             currentFileWriter.write("C    3 C2I D2I S2I                                          SYS / # / OBS TYPES ");
@@ -2220,10 +2220,10 @@ public class FileLogger implements GnssListener {
                                 if (SettingsFragment.CarrierPhase) {
                                     if(absCC > 1e4) {
                                         if (firstOBS) {
-                                            Measurements.append(prn + L1C + C1C + S1C);
+                                            Measurements.append(prn + C1C + L1C + S1C);
                                             firstOBS = false;
                                         } else {
-                                            Measurements.append("\n" + prn + L1C + C1C + S1C);
+                                            Measurements.append("\n" + prn + C1C + L1C + S1C);
                                         }
                                     }
                                 } else {
