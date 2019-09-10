@@ -225,7 +225,9 @@ public class FileLogger implements GnssListener {
                     logError("Cannot read external storage.");
                     return;
                 }
+
 // csvファイル書き出し Fileクラスで用意されているgetAbsolutePathは絶対パスによるファイルの位置と名前を取得できる
+
                 Date now = new Date();
                 String fileNameAccAzi = String.format(SettingsFragment.FILE_NAME + ".csv", SettingsFragment.FILE_PREFIXSUB);
                 File currentFileAccAzi = new File(baseAccAziDirectory, fileNameAccAzi);
@@ -252,7 +254,9 @@ public class FileLogger implements GnssListener {
                     logException("Count not initialize subobservation file: " + currentFileAccAziPath, e);
                     return;
                 }
+
 //csvファイル閉じる
+
                 if (mFileAccAzWriter != null) {
                     try {
                         mFileAccAzWriter.close();
@@ -973,10 +977,12 @@ public class FileLogger implements GnssListener {
                        // Calendar myCal= Calendar.getInstance();
                        // DateFormat myFormat = new SimpleDateFormat("MM/dd/hh:mm.ss");
                        // String myName = myFormat.format(myCal.getTime());
-                        //csv ファイルの中身　歩行者の位置モデルの指揮　altitudeは気圧センサ
+                        //csv ファイルの中身　歩行者の位置モデルの指揮　altitudeは気圧センサ accZ : 歩数
 
+                        double Azideg = Math.toDegrees(azimuth);
                         String SensorStream =
-                                String.format("%f,%f,%f", (float) (accZ * Math.sin(azimuth)), (float) (accZ * Math.cos(azimuth)), altitude);
+                                String.format("%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)), (float) (1 * Math.cos(azimuth)), altitude , Azideg, accZ);
+                        //String SensorData = String.format("%f,%f,%f",(float) (1 * Math.sin(azimuth)), Azideg, accZ);
                         mFileAccAzWriter.write(SensorStream);
                        // String day=
                         //        String.format("%6d,%6d,%6d,%13.7f,\t",gnsstimeclock_a,gnsstimeclock_b,gnsstimeclock_c,gnsstimeclock_d,myName);
@@ -985,6 +991,15 @@ public class FileLogger implements GnssListener {
 //                               String.format("%13.7f",myName);
                       //  mFileAccAzWriter.write(myName);
                         mFileAccAzWriter.newLine();
+
+                        /*
+                        String SensorData = String.format("%f,%f,%f", azimuth, (float) (accZ * Math.sin(azimuth)), accZ);
+
+                        mFileAccAzWriter.write(SensorData);
+                        mFileAccAzWriter.newLine();
+
+                         */
+
                     } catch (IOException e) {
                         Toast.makeText(mContext, "ERROR_WRITING_FILE", Toast.LENGTH_SHORT).show();
                         logException(ERROR_WRITING_FILE, e);
@@ -1253,6 +1268,7 @@ public class FileLogger implements GnssListener {
                             tRxSeconds = tRxSeconds_BDS;
                             tTxSeconds = tTxSeconds_BDS;
                         }
+
                         //GPS週のロールオーバーチェック
                         double prSeconds = tRxSeconds - tTxSeconds;
                         boolean iRollover = prSeconds > 604800 / 2;

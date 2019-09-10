@@ -274,7 +274,7 @@ public class SensorContainer {
                 SensorManager.getRotationMatrix(rotationMatrix, inclinationMatrix, mAccelerometerValues, mMagneticValues);
                 SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_MINUS_X, SensorManager.AXIS_Y, remapedMatrix);
                 SensorManager.getOrientation(remapedMatrix, orientationValues);
-                //ローパsフィルタ
+                //ローパスフィルタ
                 x = (x * 0.9 + RawX * 0.1);
                 y = (y * 0.9 + RawY * 0.1);
                 z = (z * 0.9 + RawZ * 0.1);
@@ -314,6 +314,7 @@ public class SensorContainer {
                     mRollGY = mRollGY + ((GyroY * (timeEspNanos * 1e-9)) / 2);
                     mPitchGX = mPitchGX - ((GyroX * (timeEspNanos * 1e-9)) / 2);
 
+                    //相補フィルタ
                     mRollY = (alpha)*mRollGY + (1 - alpha) * mRollAY ;
                     mPitchX = (alpha)*mPitchGX + (1 - alpha) * mPitchAX;
 
@@ -362,12 +363,13 @@ public class SensorContainer {
                 currentAccelerationXValues = (float)ax - currentOrientationXValues;
                 currentOrientationYValues = (float)ay * 0.1f + currentOrientationYValues * (1.0f - 0.1f);
                 currentAccelerationYValues = (float)ay - currentOrientationYValues;
+
                 //歩数カウンター z軸加速度-1.5になったとき歩数+1してる　状態falseに
                 if(passcounter == true) {
                     if (currentAccelerationZValues <= -1.5) {
                         counter++;
                         passcounter = false;
-                        mFileLogger.onSensorListener("", (float) mAzimuthZ,1,Altitude);
+                        mFileLogger.onSensorListener("", (float) mAzimuthZ,counter,Altitude);
                     }
                 }else{
                     //ｚ軸加速度1.0以上になった時状態trueに

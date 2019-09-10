@@ -738,7 +738,7 @@ public class UiLogger implements GnssListener {
                         } else {
                             if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_GPS || measurement.getConstellationType() == GnssStatus.CONSTELLATION_GALILEO || measurement.getConstellationType() == GnssStatus.CONSTELLATION_QZSS) {
                                 if (measurement.hasCarrierPhase() && measurement.hasCarrierCycles()) {
-                                    array[arrayRow][2] = String.format("%14.3f", measurement.getCarrierCycles() + measurement.getCarrierPhase());
+                                    array[arrayRow][2] = String.format("%14.3f", measurement.getAccumulatedDeltaRangeMeters() + measurement.getAccumulatedDeltaRangeUncertaintyMeters()/ GPS_L1_WAVELENGTH);
                                 } else {
                                     array[arrayRow][2] = String.format("%14.3f", measurement.getAccumulatedDeltaRangeMeters() / GPS_L1_WAVELENGTH);
                                 }
