@@ -2234,14 +2234,14 @@ public class FileLogger implements GnssListener {
                             //Fix用チェック
                             if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6, TOLERANCE_MHZ)) {
                                 if (SettingsFragment.CarrierPhase) {
-                                    if(absCC > 1e4) {
+                                    // if(absCC > 1e4) {
                                         if (firstOBS) {
                                             Measurements.append(prn + C1C + L1C + S1C);
                                             firstOBS = false;
                                         } else {
                                             Measurements.append("\n" + prn + C1C + L1C + S1C);
                                         }
-                                    }
+                                    //}
                                 } else {
                                     if (firstOBS) {
                                         Measurements.append(prn + C1C  + S1C);
