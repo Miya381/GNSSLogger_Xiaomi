@@ -449,7 +449,7 @@ public class FileLogger implements GnssListener {
                     //# / TYPES OF OBSERV
                     if (SettingsFragment.CarrierPhase) {
                         String NUMBEROFOBS = String.format("%-6d", 6);
-                        String OBSERV = String.format("%-54s", "    L1    C1    S1    L5    C5    S5");
+                        String OBSERV = String.format("%-54s", "    C1    L1    S1    C5    L5    S5");
                         currentFileWriter.write(NUMBEROFOBS + OBSERV + "# / TYPES OF OBSERV");
                         currentFileWriter.newLine();
                     } else {
@@ -2321,9 +2321,12 @@ public class FileLogger implements GnssListener {
                                 firstOBS = false;
                             }
                             //GPSのPRN番号と時刻用String
-                            String prn = String.format("G%2d", measurement.getSvid());
-                            satnumber = satnumber + 1;
-                            Prn.append(prn);
+                            if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6, TOLERANCE_MHZ)) {
+                                String prn = String.format("G%2d", measurement.getSvid());
+                                satnumber = satnumber + 1;
+                                Prn.append(prn);
+                            }
+
                             String PrmStrings = String.format("%14.3f%s%s", prm, " ", " ");
                             String DeltaRangeStrings = String.format("%14.3f%s%s", 0.0, " ", " ");
                             if (SettingsFragment.CarrierPhase == true) {
@@ -2391,7 +2394,7 @@ public class FileLogger implements GnssListener {
 
                             if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6, TOLERANCE_MHZ)) {
                                 if (SettingsFragment.CarrierPhase) {
-                                    Measurements.append(DeltaRangeStrings + PrmStrings + DbHz + "\n");
+                                    Measurements.append(PrmStrings + DeltaRangeStrings  + DbHz + "\n");
                                 } else {
                                     Measurements.append(PrmStrings + DbHz + "\n");
                                 }

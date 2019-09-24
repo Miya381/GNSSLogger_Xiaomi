@@ -694,7 +694,7 @@ public class UiLogger implements GnssListener {
 
             }
             else{
-                if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6f, TOLERANCE_MHZ)) {
+                //if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6f, TOLERANCE_MHZ)) {
                     if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_QZSS) {
                         //Log.d("QZSS","QZSS Detected");
                         array[arrayRow][0] = "J" + String.format("%02d  ", measurement.getSvid() - 192);
@@ -729,12 +729,14 @@ public class UiLogger implements GnssListener {
                     //builder.append("FullCarrierCycles = ").append(measurement.getCarrierCycles() + measurement.getCarrierPhase()).append("\n");
                     if (SettingsFragment.CarrierPhase == true) {
                         //Log.i("Carrier Freq",String.valueOf(measurement.getCarrierFrequencyHz()));
-                        if (measurement.getAccumulatedDeltaRangeState() == GnssMeasurement.ADR_STATE_CYCLE_SLIP) {
+                        if (measurement.getAccumulatedDeltaRangeState() == GnssMeasurement.ADR_STATE_CYCLE_SLIP){
                             array[arrayRow][2] = "CYCLE_SLIP";
                         } else if (measurement.getAccumulatedDeltaRangeState() == GnssMeasurement.ADR_STATE_RESET) {
                             array[arrayRow][2] = "RESET";
-                        } else if (measurement.getAccumulatedDeltaRangeState() == GnssMeasurement.ADR_STATE_UNKNOWN) {
-                            array[arrayRow][2] = "UNKNOWN";
+                        } else if (measurement.getAccumulatedDeltaRangeState() == GnssMeasurement.ADR_STATE_HALF_CYCLE_REPORTED) {
+                            array[arrayRow][2] = "REPORTED";
+                        } else if (measurement.getAccumulatedDeltaRangeState() == GnssMeasurement.ADR_STATE_HALF_CYCLE_RESOLVED) {
+                            array[arrayRow][2] = "RESOLVED";
                         } else {
                             if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_GPS || measurement.getConstellationType() == GnssStatus.CONSTELLATION_GALILEO || measurement.getConstellationType() == GnssStatus.CONSTELLATION_QZSS) {
                                 if (measurement.hasCarrierPhase() && measurement.hasCarrierCycles()) {
@@ -803,7 +805,7 @@ public class UiLogger implements GnssListener {
                     array[arrayRow][4] = getCarrierFrequencyLabel(measurement.getCarrierFrequencyHz());
 
                     arrayRow++;
-                }
+
             }
         }
     }
