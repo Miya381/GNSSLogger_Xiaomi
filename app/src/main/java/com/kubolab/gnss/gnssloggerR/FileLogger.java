@@ -966,13 +966,12 @@ public class FileLogger implements GnssListener {
     }
 
 
-    public void onSensorListener(String listener,float azimuth,float accZ,float altitude){
+    public void onSensorListener(String listener,float azimuth,float accZ,float altitude,float MagX,float MagY,float MagZ){
         synchronized (mFileAccAzLock) {
             if (mFileAccAzWriter == null || SettingsFragment.ResearchMode == false || !SettingsFragment.EnableSensorLog) {
                 return;
-            }
-            else{
-                if(listener == "") {
+            }else{
+                if(listener == ""){
                     try {
                        // Calendar myCal= Calendar.getInstance();
                        // DateFormat myFormat = new SimpleDateFormat("MM/dd/hh:mm.ss");
@@ -981,7 +980,7 @@ public class FileLogger implements GnssListener {
 
                         double Azideg = Math.toDegrees(azimuth);
                         String SensorStream =
-                                String.format("%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)), (float) (1 * Math.cos(azimuth)), altitude , Azideg, accZ);
+                                String.format("%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)),(float) (1 * Math.cos(azimuth)),altitude,Azideg,accZ,MagX,MagY,MagZ);
                         //String SensorData = String.format("%f,%f,%f",(float) (1 * Math.sin(azimuth)), Azideg, accZ);
                         mFileAccAzWriter.write(SensorStream);
                        // String day=

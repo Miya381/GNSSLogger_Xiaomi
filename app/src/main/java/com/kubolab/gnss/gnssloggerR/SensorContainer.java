@@ -369,7 +369,7 @@ public class SensorContainer {
                     if (currentAccelerationZValues <= -1.5) {
                         counter++;
                         passcounter = false;
-                        mFileLogger.onSensorListener("", (float) mAzimuthZ,counter,Altitude);
+                        mFileLogger.onSensorListener("", (float) mAzimuthZ,counter,Altitude, MagX, MagY, MagZ);
                     }
                 }else{
                     //ｚ軸加速度1.0以上になった時状態trueに
