@@ -966,7 +966,7 @@ public class FileLogger implements GnssListener {
     }
 
 
-    public void onSensorListener(String listener,float azimuth,float accZ,float altitude,float MagX,float MagY,float MagZ){
+    public void onSensorListener(String listener,float roll, float pitch, float azimuth,float accZ,float altitude, float MagX,float MagY,float MagZ,float UncariMagX,float UncariMagY,float UncariMagZ,float APIAzi){
         synchronized (mFileAccAzLock) {
             if (mFileAccAzWriter == null || SettingsFragment.ResearchMode == false || !SettingsFragment.EnableSensorLog) {
                 return;
@@ -979,17 +979,27 @@ public class FileLogger implements GnssListener {
                         //csv ファイルの中身　歩行者の位置モデルの指揮　altitudeは気圧センサ accZ : 歩数
 
                         double Azideg = Math.toDegrees(azimuth);
+                        double Pitchdeg = Math.toDegrees(pitch);
+                        double Rolldeg = Math.toDegrees(roll);
+
                         String SensorStream =
-                                String.format("%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)),(float) (1 * Math.cos(azimuth)),altitude,Azideg,accZ,MagX,MagY,MagZ);
-                        //String SensorData = String.format("%f,%f,%f",(float) (1 * Math.sin(azimuth)), Azideg, accZ);
+                                String.format("%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)),(float) (1 * Math.cos(azimuth)),altitude,Pitchdeg,Rolldeg,Azideg,accZ,MagX,MagY,MagZ,UncariMagX,UncariMagY,UncariMagZ,APIAzi);
+
+                        //String nametag =
+                        //        String.format("East,North,Altitude,Pitch,Roll,Azimuth,Stepnumber,MagX,MagY,MagZ,UncariMagX,UncariMagY,UncariMagZ");
+
+                        //mFileAccAzWriter.write(nametag);
+                        //mFileAccAzWriter.newLine();
                         mFileAccAzWriter.write(SensorStream);
+                        mFileAccAzWriter.newLine();
+
                        // String day=
                         //        String.format("%6d,%6d,%6d,%13.7f,\t",gnsstimeclock_a,gnsstimeclock_b,gnsstimeclock_c,gnsstimeclock_d,myName);
                       // mFileAccAzWriter.write(day);
                     //    String time=
 //                               String.format("%13.7f",myName);
                       //  mFileAccAzWriter.write(myName);
-                        mFileAccAzWriter.newLine();
+
 
                         /*
                         String SensorData = String.format("%f,%f,%f", azimuth, (float) (accZ * Math.sin(azimuth)), accZ);
