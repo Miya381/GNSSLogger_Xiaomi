@@ -449,7 +449,7 @@ public class FileLogger implements GnssListener {
                     //# / TYPES OF OBSERV
                     if (SettingsFragment.CarrierPhase) {
                         String NUMBEROFOBS = String.format("%-6d", 6);
-                        String OBSERV = String.format("%-54s", "    L1    C1    S1    L5    C5    S5");
+                        String OBSERV = String.format("%-54s", "    C1    L1    S1    C5    L5    S5");
                         currentFileWriter.write(NUMBEROFOBS + OBSERV + "# / TYPES OF OBSERV");
                         currentFileWriter.newLine();
                     } else {
@@ -966,13 +966,12 @@ public class FileLogger implements GnssListener {
     }
 
 
-    public void onSensorListener(String listener,float azimuth,float accZ,float altitude){
+    public void onSensorListener(String listener,float roll, float pitch, float azimuth,float accZ,float altitude, float MagX,float MagY,float MagZ,float UncariMagX,float UncariMagY,float UncariMagZ,float APIAzi){
         synchronized (mFileAccAzLock) {
             if (mFileAccAzWriter == null || SettingsFragment.ResearchMode == false || !SettingsFragment.EnableSensorLog) {
                 return;
-            }
-            else{
-                if(listener == "") {
+            }else{
+                if(listener == ""){
                     try {
                        // Calendar myCal= Calendar.getInstance();
                        // DateFormat myFormat = new SimpleDateFormat("MM/dd/hh:mm.ss");
@@ -980,17 +979,27 @@ public class FileLogger implements GnssListener {
                         //csv ファイルの中身　歩行者の位置モデルの指揮　altitudeは気圧センサ accZ : 歩数
 
                         double Azideg = Math.toDegrees(azimuth);
+                        double Pitchdeg = Math.toDegrees(pitch);
+                        double Rolldeg = Math.toDegrees(roll);
+
                         String SensorStream =
-                                String.format("%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)), (float) (1 * Math.cos(azimuth)), altitude , Azideg, accZ);
-                        //String SensorData = String.format("%f,%f,%f",(float) (1 * Math.sin(azimuth)), Azideg, accZ);
+                                String.format("%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)),(float) (1 * Math.cos(azimuth)),altitude,Pitchdeg,Rolldeg,Azideg,accZ,MagX,MagY,MagZ,UncariMagX,UncariMagY,UncariMagZ,APIAzi);
+
+                        //String nametag =
+                        //        String.format("East,North,Altitude,Pitch,Roll,Azimuth,Stepnumber,MagX,MagY,MagZ,UncariMagX,UncariMagY,UncariMagZ");
+
+                        //mFileAccAzWriter.write(nametag);
+                        //mFileAccAzWriter.newLine();
                         mFileAccAzWriter.write(SensorStream);
+                        mFileAccAzWriter.newLine();
+
                        // String day=
                         //        String.format("%6d,%6d,%6d,%13.7f,\t",gnsstimeclock_a,gnsstimeclock_b,gnsstimeclock_c,gnsstimeclock_d,myName);
                       // mFileAccAzWriter.write(day);
                     //    String time=
 //                               String.format("%13.7f",myName);
                       //  mFileAccAzWriter.write(myName);
-                        mFileAccAzWriter.newLine();
+
 
                         /*
                         String SensorData = String.format("%f,%f,%f", azimuth, (float) (accZ * Math.sin(azimuth)), accZ);
@@ -2234,14 +2243,14 @@ public class FileLogger implements GnssListener {
                             //Fix用チェック
                             if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6, TOLERANCE_MHZ)) {
                                 if (SettingsFragment.CarrierPhase) {
-                                    if(absCC > 1e4) {
+                                    // if(absCC > 1e4) {
                                         if (firstOBS) {
                                             Measurements.append(prn + C1C + L1C + S1C);
                                             firstOBS = false;
                                         } else {
                                             Measurements.append("\n" + prn + C1C + L1C + S1C);
                                         }
-                                    }
+                                    //}
                                 } else {
                                     if (firstOBS) {
                                         Measurements.append(prn + C1C  + S1C);
@@ -2321,9 +2330,12 @@ public class FileLogger implements GnssListener {
                                 firstOBS = false;
                             }
                             //GPSのPRN番号と時刻用String
-                            String prn = String.format("G%2d", measurement.getSvid());
-                            satnumber = satnumber + 1;
-                            Prn.append(prn);
+                            if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6, TOLERANCE_MHZ)) {
+                                String prn = String.format("G%2d", measurement.getSvid());
+                                satnumber = satnumber + 1;
+                                Prn.append(prn);
+                            }
+
                             String PrmStrings = String.format("%14.3f%s%s", prm, " ", " ");
                             String DeltaRangeStrings = String.format("%14.3f%s%s", 0.0, " ", " ");
                             if (SettingsFragment.CarrierPhase == true) {
@@ -2391,7 +2403,7 @@ public class FileLogger implements GnssListener {
 
                             if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6, TOLERANCE_MHZ)) {
                                 if (SettingsFragment.CarrierPhase) {
-                                    Measurements.append(DeltaRangeStrings + PrmStrings + DbHz + "\n");
+                                    Measurements.append(PrmStrings + DeltaRangeStrings  + DbHz + "\n");
                                 } else {
                                     Measurements.append(PrmStrings + DbHz + "\n");
                                 }

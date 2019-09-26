@@ -6,7 +6,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
-
+import android.location.Location;
+import android.location.LocationProvider;
 import java.util.List;
 
 /**
@@ -62,6 +63,8 @@ public class SensorContainer {
     private final Context mContext;
     private final UiLogger mLogger;
     private final FileLogger mFileLogger;
+
+    private double trueAzi;
 
     private float LAST_STEP = (float) 0.0;
     private float NOW_STEP = (float) 0.0;
@@ -300,6 +303,7 @@ public class SensorContainer {
                     double Gy = x;
                     double Gz = z;
 
+
                     mRollAY = Math.atan2(Gy, Gz);
                     mPitchAX = Math.atan((-Gx) / (Gy * Math.sin(mRollY) + Gz * Math.cos(mRollY)));
 
@@ -369,7 +373,10 @@ public class SensorContainer {
                     if (currentAccelerationZValues <= -1.5) {
                         counter++;
                         passcounter = false;
-                        mFileLogger.onSensorListener("", (float) mAzimuthZ,counter,Altitude);
+                        float APIAzi = radianToDegrees(orientationValues[0]);
+
+                        //　CSVファイル出力
+                        mFileLogger.onSensorListener("",(float) mPitchX,(float) mRollY,(float) mAzimuthZ,counter,Altitude,MagX,MagY,MagZ,MagUncalibratedX,MagUncalibratedY,MagUncalibratedZ,APIAzi);
                     }
                 }else{
                     //ｚ軸加速度1.0以上になった時状態trueに
@@ -399,7 +406,9 @@ public class SensorContainer {
 
                 sensorRaw[0] = String.format("X = %7.4f, Y = %7.4f, Z = %7.4f", RawX, RawY, RawZ);
 
+
                 mLogger.onSensorRawListener(sensorRaw);
+                //trueAzi = Location.getBearing();
 
 // sensorsの結果出力 LastAltitude - Altitude, counter, AccAzi
                 if(SettingsFragment.ResearchMode) {
