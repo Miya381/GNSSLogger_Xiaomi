@@ -696,7 +696,7 @@ public class UiLogger implements GnssListener {
 
             }
             else{
-                //if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6f, TOLERANCE_MHZ)) {
+                if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6f, TOLERANCE_MHZ)) {
                     if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_QZSS) {
                         //Log.d("QZSS","QZSS Detected");
                         array[arrayRow][0] = "J" + String.format("%02d  ", measurement.getSvid() - 192);
@@ -734,7 +734,7 @@ public class UiLogger implements GnssListener {
                     //builder.append("FullCarrierCycles = ").append(measurement.getCarrierCycles() + measurement.getCarrierPhase()).append("\n");
                     if (SettingsFragment.CarrierPhase == true) {
                         //Log.i("Carrier Freq",String.valueOf(measurement.getCarrierFrequencyHz()));
-                        if (measurement.getAccumulatedDeltaRangeState() == GnssMeasurement.ADR_STATE_CYCLE_SLIP){
+                        if (measurement.getAccumulatedDeltaRangeState() == GnssMeasurement.ADR_STATE_CYCLE_SLIP) {
                             array[arrayRow][2] = "CYCLE_SLIP";
                         } else if (measurement.getAccumulatedDeltaRangeState() == GnssMeasurement.ADR_STATE_RESET) {
                             array[arrayRow][2] = "RESET";
@@ -745,7 +745,7 @@ public class UiLogger implements GnssListener {
                         } else {
                             if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_GPS || measurement.getConstellationType() == GnssStatus.CONSTELLATION_GALILEO || measurement.getConstellationType() == GnssStatus.CONSTELLATION_QZSS) {
                                 if (measurement.hasCarrierPhase() && measurement.hasCarrierCycles()) {
-                                    array[arrayRow][2] = String.format("%14.3f", measurement.getAccumulatedDeltaRangeMeters() + measurement.getAccumulatedDeltaRangeUncertaintyMeters()/ GPS_L1_WAVELENGTH);
+                                    array[arrayRow][2] = String.format("%14.3f", measurement.getAccumulatedDeltaRangeMeters() + measurement.getAccumulatedDeltaRangeUncertaintyMeters() / GPS_L1_WAVELENGTH);
                                 } else {
                                     array[arrayRow][2] = String.format("%14.3f", measurement.getAccumulatedDeltaRangeMeters() / GPS_L1_WAVELENGTH);
                                 }
@@ -807,20 +807,23 @@ public class UiLogger implements GnssListener {
                     }
                     array[arrayRow][3] = String.format("%2.1f", measurement.getCn0DbHz());
 
-                if (measurement.getMultipathIndicator() == GnssMeasurement.MULTIPATH_INDICATOR_DETECTED){
-                    array[arrayRow][4] = "DETECTED";
-                } else if (measurement.getMultipathIndicator() == GnssMeasurement.MULTIPATH_INDICATOR_NOT_DETECTED) {
-                    array[arrayRow][4] = "NOT_DETECTED";
-                } else if (measurement.getMultipathIndicator() == GnssMeasurement.MULTIPATH_INDICATOR_UNKNOWN) {
-                    array[arrayRow][4] = "UNKNOWN";
-                } else{
-                    array[arrayRow][4] = "OK";
-                }
+                    /*
+                    if (measurement.getMultipathIndicator() == GnssMeasurement.MULTIPATH_INDICATOR_DETECTED) {
+                        array[arrayRow][4] = "DETECTED";
+                    } else if (measurement.getMultipathIndicator() == GnssMeasurement.MULTIPATH_INDICATOR_NOT_DETECTED) {
+                        array[arrayRow][4] = "NOT_DETECTED";
+                    } else if (measurement.getMultipathIndicator() == GnssMeasurement.MULTIPATH_INDICATOR_UNKNOWN) {
+                        array[arrayRow][4] = "UNKNOWN";
+                    } else {
+                        array[arrayRow][4] = "OK";
+                    }
 
-               // array[arrayRow][4] = getCarrierFrequencyLabel(measurement.getCarrierFrequencyHz());
+                    */
+
+                    array[arrayRow][4] = getCarrierFrequencyLabel(measurement.getCarrierFrequencyHz());
 
                     arrayRow++;
-
+                }
             }
         }
     }
