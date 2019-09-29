@@ -966,7 +966,7 @@ public class FileLogger implements GnssListener {
     }
 
 
-    public void onSensorListener(String listener,float roll, float pitch, float azimuth,float accZ,float altitude, float MagX,float MagY,float MagZ,float UncariMagX,float UncariMagY,float UncariMagZ,float APIAzi){
+    public void onSensorListener(String listener,float roll, float pitch, float azimuth,float accZ,float altitude, float MagX,float MagY,float MagZ,float APIAzi){
         synchronized (mFileAccAzLock) {
             if (mFileAccAzWriter == null || SettingsFragment.ResearchMode == false || !SettingsFragment.EnableSensorLog) {
                 return;
@@ -983,7 +983,7 @@ public class FileLogger implements GnssListener {
                         double Rolldeg = Math.toDegrees(roll);
 
                         String SensorStream =
-                                String.format("%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)),(float) (1 * Math.cos(azimuth)),altitude,Pitchdeg,Rolldeg,Azideg,accZ,MagX,MagY,MagZ,UncariMagX,UncariMagY,UncariMagZ,APIAzi);
+                                String.format("%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)),(float) (1 * Math.cos(azimuth)),altitude,Pitchdeg,Rolldeg,Azideg,accZ,MagX,MagY,MagZ,APIAzi);
 
                         //String nametag =
                         //        String.format("East,North,Altitude,Pitch,Roll,Azimuth,Stepnumber,MagX,MagY,MagZ,UncariMagX,UncariMagY,UncariMagZ");
@@ -2155,20 +2155,24 @@ public class FileLogger implements GnssListener {
                                 //firstOBS = false;
                             }
                             //GPSのPRN番号と時刻用String
+                            double CarrierCycles = measurement.getAccumulatedDeltaRangeMeters()/GPS_L1_WAVELENGTH;
+                            double absCC = Math.abs(CarrierCycles);
                             String prn = "";
                             if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6, TOLERANCE_MHZ)) {
-                                if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_GPS) {
-                                    prn = String.format("G%02d", measurement.getSvid());
-                                } else if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_GLONASS) {
-                                    prn = String.format("R%02d", measurement.getSvid());
-                                } else if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_QZSS) {
-                                    prn = String.format("J%02d", measurement.getSvid() - 192);
-                                } else if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_GALILEO) {
-                                    prn = String.format("E%02d", measurement.getSvid());
-                                } else if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_BEIDOU) {
-                                    prn = String.format("C%02d", measurement.getSvid());
+                                if(absCC > 1e4) {
+                                    if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_GPS) {
+                                        prn = String.format("G%02d", measurement.getSvid());
+                                    } else if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_GLONASS) {
+                                        prn = String.format("R%02d", measurement.getSvid());
+                                    } else if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_QZSS) {
+                                        prn = String.format("J%02d", measurement.getSvid() - 192);
+                                    } else if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_GALILEO) {
+                                        prn = String.format("E%02d", measurement.getSvid());
+                                    } else if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_BEIDOU) {
+                                        prn = String.format("C%02d", measurement.getSvid());
+                                    }
+                                    satnumber = satnumber + 1;
                                 }
-                                satnumber = satnumber + 1;
                             }
 
                             //Measurements.append(prn);
@@ -2176,8 +2180,6 @@ public class FileLogger implements GnssListener {
                             String L1C = String.format("%14.3f%s%s", 0.0, " ", " ");
                             //搬送波の謎バイアスを補正したい
                             double ADR = measurement.getAccumulatedDeltaRangeMeters();
-                            double CarrierCycles = measurement.getAccumulatedDeltaRangeMeters()/GPS_L1_WAVELENGTH;
-                            double absCC = Math.abs(CarrierCycles);
                             if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6, TOLERANCE_MHZ)) {
                                 if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_GPS || measurement.getConstellationType() == GnssStatus.CONSTELLATION_GALILEO || measurement.getConstellationType() == GnssStatus.CONSTELLATION_QZSS) {
 
@@ -2243,14 +2245,14 @@ public class FileLogger implements GnssListener {
                             //Fix用チェック
                             if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6, TOLERANCE_MHZ)) {
                                 if (SettingsFragment.CarrierPhase) {
-                                    // if(absCC > 1e4) {
+                                     if(absCC > 1e4) {
                                         if (firstOBS) {
                                             Measurements.append(prn + C1C + L1C + S1C);
                                             firstOBS = false;
                                         } else {
                                             Measurements.append("\n" + prn + C1C + L1C + S1C);
                                         }
-                                    //}
+                                    }
                                 } else {
                                     if (firstOBS) {
                                         Measurements.append(prn + C1C  + S1C);

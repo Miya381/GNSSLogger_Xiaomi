@@ -376,7 +376,7 @@ public class SensorContainer {
                         float APIAzi = radianToDegrees(orientationValues[0]);
 
                         //　CSVファイル出力
-                        mFileLogger.onSensorListener("",(float) mPitchX,(float) mRollY,(float) mAzimuthZ,counter,Altitude,MagX,MagY,MagZ,MagUncalibratedX,MagUncalibratedY,MagUncalibratedZ,APIAzi);
+                        mFileLogger.onSensorListener("",(float) mPitchX,(float) mRollY,(float) mAzimuthZ,counter,Altitude,MagX,MagY,MagZ,APIAzi);
                     }
                 }else{
                     //ｚ軸加速度1.0以上になった時状態trueに
