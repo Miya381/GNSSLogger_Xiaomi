@@ -696,7 +696,7 @@ public class UiLogger implements GnssListener {
 
             }
             else{
-                if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6f, TOLERANCE_MHZ)) {
+                //if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6f, TOLERANCE_MHZ)) {
                     if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_QZSS) {
                         //Log.d("QZSS","QZSS Detected");
                         array[arrayRow][0] = "J" + String.format("%02d  ", measurement.getSvid() - 192);
@@ -824,7 +824,7 @@ public class UiLogger implements GnssListener {
 
                     arrayRow++;
                 }
-            }
+            //}
         }
     }
     if(CheckClockSync){
