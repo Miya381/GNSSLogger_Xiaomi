@@ -966,7 +966,7 @@ public class FileLogger implements GnssListener {
     }
 
 
-    public void onSensorListener(String listener,float roll, float pitch, float azimuth,float accZ,float altitude, float MagX,float MagY,float MagZ,float APIAzi){
+    public void onSensorListener(String listener,float roll, float pitch, float azimuth,float accZ,float Altitude, float MagX,float MagY,float MagZ,float APIAzi){
         synchronized (mFileAccAzLock) {
             if (mFileAccAzWriter == null || SettingsFragment.ResearchMode == false || !SettingsFragment.EnableSensorLog) {
                 return;
@@ -983,13 +983,15 @@ public class FileLogger implements GnssListener {
                         double Rolldeg = Math.toDegrees(roll);
 
                         String SensorStream =
-                                String.format("%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)),(float) (1 * Math.cos(azimuth)),altitude,Pitchdeg,Rolldeg,Azideg,accZ,MagX,MagY,MagZ,APIAzi);
+                                String.format("%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)),(float) (1 * Math.cos(azimuth)),Altitude,Pitchdeg,Rolldeg,Azideg,accZ,MagX,MagY,MagZ,APIAzi);
 
                         //String nametag =
                         //        String.format("East,North,Altitude,Pitch,Roll,Azimuth,Stepnumber,MagX,MagY,MagZ,UncariMagX,UncariMagY,UncariMagZ");
 
+  //                      String Time = String.format("%4d %2d %2d %2d %2d%11.7f", value.Y, value.M, value.D, value.h, value.m, value.s);
                         //mFileAccAzWriter.write(nametag);
                         //mFileAccAzWriter.newLine();
+
                         mFileAccAzWriter.write(SensorStream);
                         mFileAccAzWriter.newLine();
 
@@ -2252,7 +2254,7 @@ public class FileLogger implements GnssListener {
                                         } else {
                                             Measurements.append("\n" + prn + C1C + L1C + S1C);
                                         }
-                                    }
+                                     }
                                 } else {
                                     if (firstOBS) {
                                         Measurements.append(prn + C1C  + S1C);

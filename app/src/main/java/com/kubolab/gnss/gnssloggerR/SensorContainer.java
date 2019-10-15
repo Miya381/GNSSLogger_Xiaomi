@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 import android.util.Log;
 import android.location.Location;
 import android.location.LocationProvider;
+import android.location.LocationManager;
 import java.util.List;
 
 /**
@@ -70,7 +71,7 @@ public class SensorContainer {
     private float NOW_STEP = (float) 0.0;
 
     private long LAST_GYRONANOS = -1;
-    // ローパスフィルタ用変数　手振れなどにより一瞬だけ力がかかってしまうのを除去するのがローパスフィルタ。常にかかっている重力などの影響を除去するのがハイパスフィルタ（強く振ると感知してくれる）
+    // ハイパスフィルタ用変数　手振れなどにより一瞬だけ力がかかってしまうのを除去するのがローパスフィルタ。常にかかっている重力などの影響を除去するのがハイパスフィルタ（強く振ると感知してくれる）
     private float currentOrientationZValues = 0.0f;
     private float currentAccelerationZValues = 0.0f;
     private float currentAccelerationXValues = 0.0f;
@@ -354,13 +355,14 @@ public class SensorContainer {
                     sensorRaw[5] = String.format("Ambient Pressure = %7.2f", Pressure);
                 }
 
-                //加速度センサーのWGS84系での下向きの加速度を求める
+                //加速度センサーのWGS84系での下向きの加速度を求める(センサから求めたRoll,Pitch,Azimuthを用いて端末の傾きを補正している)
                 double az = - RawX * Math.sin(mRollY) + RawY * Math.sin((mPitchX)) + RawZ * Math.cos((mPitchX)) * Math.cos(mRollY);
                 double bx = RawX * Math.cos(mRollY) + RawZ * Math.sin(mRollY);
                 double by = RawX * Math.sin(mPitchX) * Math.sin(mRollY) + RawY * Math.cos(mPitchX) - RawZ * Math.sin(mPitchX) * Math.cos(mRollY);
                 double ax = bx * Math.cos(mAzimuthZ) - by * Math.sin(mAzimuthZ);
                 double ay = bx * Math.sin(mAzimuthZ) + by * Math.cos(mAzimuthZ);
 
+                //ハイパスフィルタ
                 currentOrientationZValues = (float)az * 0.1f + currentOrientationZValues * (1.0f - 0.1f);
                 currentAccelerationZValues = (float)az - currentOrientationZValues;
                 currentOrientationXValues = (float)ax * 0.1f + currentOrientationXValues * (1.0f - 0.1f);
@@ -368,15 +370,28 @@ public class SensorContainer {
                 currentOrientationYValues = (float)ay * 0.1f + currentOrientationYValues * (1.0f - 0.1f);
                 currentAccelerationYValues = (float)ay - currentOrientationYValues;
 
+                /*
+                Location lon = new Location();
+                Location lat = new Location();
+                Location alt = new Location();
+
+                    double APIlon = lon.getLongitude();
+                    double APIlat = lat.getLatitude();
+                    double APIalt = alt.getAltitude();
+
+                    //　CSVファイル出力
+                    float APIAzi = radianToDegrees(orientationValues[0]);
+                    mFileLogger.onSensorListener("", (float) mPitchX, (float) mRollY, (float) mAzimuthZ, counter, Altitude, MagX, MagY, MagZ, APIAzi, APIlon, APIlat, APIalt);
+*/
+                //　CSVファイル出力
+                float APIAzi = radianToDegrees(orientationValues[0]);
+                mFileLogger.onSensorListener("", (float) mPitchX, (float) mRollY, (float) mAzimuthZ, counter, Altitude, MagX, MagY, MagZ, APIAzi);
                 //歩数カウンター z軸加速度-1.5になったとき歩数+1してる　状態falseに
                 if(passcounter == true) {
                     if (currentAccelerationZValues <= -1.5) {
                         counter++;
                         passcounter = false;
-                        float APIAzi = radianToDegrees(orientationValues[0]);
 
-                        //　CSVファイル出力
-                        mFileLogger.onSensorListener("",(float) mPitchX,(float) mRollY,(float) mAzimuthZ,counter,Altitude,MagX,MagY,MagZ,APIAzi);
                     }
                 }else{
                     //ｚ軸加速度1.0以上になった時状態trueに
