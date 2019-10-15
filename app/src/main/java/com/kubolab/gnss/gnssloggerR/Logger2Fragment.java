@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import org.apache.commons.math3.geometry.euclidean.twod.Line;
 
+
 public class Logger2Fragment extends Fragment {
 
     private TextView mLogView;

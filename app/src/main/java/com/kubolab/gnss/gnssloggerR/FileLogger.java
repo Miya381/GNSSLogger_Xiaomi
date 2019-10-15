@@ -33,6 +33,7 @@ import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+//確認
 //aiueo
 public class FileLogger implements GnssListener {
 
