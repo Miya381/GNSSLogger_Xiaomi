@@ -798,7 +798,7 @@ public class FileLogger implements GnssListener {
                                         location.getLongitude(),
                                         location.getLatitude(),
                                         location.getAltitude());
-/*
+
                         longitudekml.add(location.getLongitude());
                         latitudekml.add(location.getLatitude());
                         altitudekml.add(location.getAltitude());
@@ -814,7 +814,7 @@ public class FileLogger implements GnssListener {
                                 String.format("%d,%d,%d,%d,%d,%13.7f",gnsstimeclock_f,gnsstimeclock_e,gnsstimeclock_a,gnsstimeclock_b,gnsstimeclock_c,gnsstimeclock_d);
                         arrayList1.add(gnsstime);
 
- */
+
                         mFileSubWriter.write(locationStream);
                         mFileSubWriter.newLine();
                     }catch (IOException e){
