@@ -797,12 +797,14 @@ public class FileLogger implements GnssListener {
                                         "       %15.9f,%15.9f,%15.9f",
                                         location.getLongitude(),
                                         location.getLatitude(),
-                                        location.getAltitude()
-
-                                        );
+                                        location.getAltitude());
+/*
                         longitudekml.add(location.getLongitude());
                         latitudekml.add(location.getLatitude());
                         altitudekml.add(location.getAltitude());
+
+
+
                         Calendar myCal= Calendar.getInstance();
                         DateFormat myFormat = new SimpleDateFormat("yyyy/MM/dd");
                         String myName = myFormat.format(myCal.getTime());
@@ -811,6 +813,8 @@ public class FileLogger implements GnssListener {
                         String gnsstime=
                                 String.format("%d,%d,%d,%d,%d,%13.7f",gnsstimeclock_f,gnsstimeclock_e,gnsstimeclock_a,gnsstimeclock_b,gnsstimeclock_c,gnsstimeclock_d);
                         arrayList1.add(gnsstime);
+
+ */
                         mFileSubWriter.write(locationStream);
                         mFileSubWriter.newLine();
                     }catch (IOException e){

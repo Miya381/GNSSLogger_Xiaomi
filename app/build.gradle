@@ -5,7 +5,7 @@ android {
     buildToolsVersion '29.0.0'
     defaultConfig {
         applicationId 'com.kubolab.gnss.gnssloggerR'
-        minSdkVersion 26
+        minSdkVersion 25
         targetSdkVersion 28
         versionName '1.5.2'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
