@@ -1,4 +1,4 @@
-# GNSSLogger_dual
+# GNSSLogger_Xiaomi
 GNSSLoggerR v0.0.1a
 
 オリジナルのGNSSLoggerにRINEX出力、センサー出力、各種ログ機能追加などの改良を施したバージョンです。
