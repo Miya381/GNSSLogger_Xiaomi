@@ -15,7 +15,7 @@ public interface GnssListener {
     void onProviderEnabled(String provider);
     /** @see LocationListener#onProviderDisabled(String) */
     void onProviderDisabled(String provider);
-    /** @see LocationListener#onLocationChanged(Location) */
+    /** @see LocationListener#onLocationChanged(Location ) */
     void onLocationChanged(Location location);
     /** @see LocationListener#onStatusChanged(String, int, Bundle) */
     void onLocationStatusChanged(String provider, int status, Bundle extras);

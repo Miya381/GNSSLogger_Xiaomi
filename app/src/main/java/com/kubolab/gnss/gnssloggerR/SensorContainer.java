@@ -10,6 +10,8 @@ import android.location.Location;
 import android.location.LocationProvider;
 import android.location.LocationManager;
 import java.util.List;
+import java.util.Timer; // 今回追加する処理
+import java.util.TimerTask;
 
 /**
  * 回転角度取得クラス
@@ -370,19 +372,6 @@ public class SensorContainer {
                 currentOrientationYValues = (float)ay * 0.1f + currentOrientationYValues * (1.0f - 0.1f);
                 currentAccelerationYValues = (float)ay - currentOrientationYValues;
 
-                /*
-                Location lon = new Location();
-                Location lat = new Location();
-                Location alt = new Location();
-
-                    double APIlon = lon.getLongitude();
-                    double APIlat = lat.getLatitude();
-                    double APIalt = alt.getAltitude();
-
-                    //　CSVファイル出力
-                    float APIAzi = radianToDegrees(orientationValues[0]);
-                    mFileLogger.onSensorListener("", (float) mPitchX, (float) mRollY, (float) mAzimuthZ, counter, Altitude, MagX, MagY, MagZ, APIAzi, APIlon, APIlat, APIalt);
-*/
 
                 //歩数カウンター z軸加速度-1.5になったとき歩数+1してる　状態falseに
                 if(passcounter == true) {
@@ -390,8 +379,9 @@ public class SensorContainer {
                         counter++;
                         passcounter = false;
                         //　CSVファイル出力
-                        float APIAzi = radianToDegrees(orientationValues[0]);
+                        final float APIAzi = radianToDegrees(orientationValues[0]);
                         mFileLogger.onSensorListener("", (float) mPitchX, (float) mRollY, (float) mAzimuthZ, counter, Altitude, MagX, MagY, MagZ, APIAzi);
+
                     }
                 }else{
                     //ｚ軸加速度1.0以上になった時状態trueに

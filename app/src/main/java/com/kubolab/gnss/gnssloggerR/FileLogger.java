@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 //確認
 //aiueo
@@ -84,9 +86,9 @@ public class FileLogger implements GnssListener {
     private int gnsstimeclock_a;
     private int gnsstimeclock_b;
     private int gnsstimeclock_c;
-    private double gnsstimeclock_d;
+    private int gnsstimeclock_d;
     private int gnsstimeclock_e;
-    private int gnsstimeclock_f;
+    private double gnsstimeclock_f;
     final float TOLERANCE_MHZ = 1e8f;
     //GLONASS系の補正情報
     private int[] GLONASSFREQ = {1,-4,5,6,1,-4,5,6,-2,-7,0,-1,-2,-7,0,-1,4,-3,3,2,4,-3,3,2};
@@ -780,7 +782,7 @@ public class FileLogger implements GnssListener {
     public void onProviderDisabled(String provider) {}
 
     @Override
-    public void onLocationChanged(Location location ) {
+    public void onLocationChanged(Location location) {
         if (location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
 
             synchronized (mFileSubLock) {
@@ -803,19 +805,34 @@ public class FileLogger implements GnssListener {
                         latitudekml.add(location.getLatitude());
                         altitudekml.add(location.getAltitude());
 
+                        /*
+                        GnssClock gnssClock = event.getClock();
+                        double weekNumber = Math.floor(-(gnssClock.getFullBiasNanos() * 1e-9 / 604800));
+                        double weekNumberNanos = weekNumber * 604800 * 1e9;
+                        //FullBiasNanosがリセットされたら再計算
+                        if (constFullBiasNanos == 0.0) {
+                            if (gnssClock.hasBiasNanos()) {
+                                constFullBiasNanos = gnssClock.getFullBiasNanos() + gnssClock.getBiasNanos();
+                            } else {
+                                constFullBiasNanos = gnssClock.getFullBiasNanos();
+                            }
+                        }
+                        double tRxNanos = gnssClock.getTimeNanos() - constFullBiasNanos - weekNumberNanos;
+
+                        //GPS週・週秒から年月日時分秒に変換
+                        GPSWStoGPST gpswStoGPST = new GPSWStoGPST();
+                        ReturnValue value = gpswStoGPST.method(weekNumber, tRxNanos * 1e-9);
 
 
-                        Calendar myCal= Calendar.getInstance();
-                        DateFormat myFormat = new SimpleDateFormat("yyyy/MM/dd");
-                        String myName = myFormat.format(myCal.getTime());
-                        //mFileSubWriter.write(myName);
-                        //mFileSubWriter.newLine();
+                         */
                         String gnsstime=
-                                String.format("%d,%d,%d,%d,%d,%13.7f",gnsstimeclock_f,gnsstimeclock_e,gnsstimeclock_a,gnsstimeclock_b,gnsstimeclock_c,gnsstimeclock_d);
+                                String.format("%d,%d,%d,%d,%d,%13.7f",gnsstimeclock_a,gnsstimeclock_b,gnsstimeclock_c,gnsstimeclock_d,gnsstimeclock_e,gnsstimeclock_f);
                         arrayList1.add(gnsstime);
 
 
+
                         mFileSubWriter.write(locationStream);
+
                         mFileSubWriter.newLine();
                     }catch (IOException e){
                         Toast.makeText(mContext, "ERROR_WRITING_FILE", Toast.LENGTH_SHORT).show();
@@ -836,8 +853,6 @@ public class FileLogger implements GnssListener {
                 return;
             }
             GnssClock gnssClock = event.getClock();
-
-
 
             //平滑化方式が変更になれば係数を初期化
             if(SettingsFragment.SMOOTHER_RATE_RESET_FLAG_FILE){
@@ -974,56 +989,40 @@ public class FileLogger implements GnssListener {
     public void onSensorListener(String listener,float roll, float pitch, float azimuth,float accZ,float Altitude, float MagX,float MagY,float MagZ,float APIAzi){
         synchronized (mFileAccAzLock) {
             if (mFileAccAzWriter == null || SettingsFragment.ResearchMode == false || !SettingsFragment.EnableSensorLog) {
+
                 return;
             }else{
                 if(listener == ""){
-                    try {
-                       // Calendar myCal= Calendar.getInstance();
-                       // DateFormat myFormat = new SimpleDateFormat("MM/dd/hh:mm.ss");
-                       // String myName = myFormat.format(myCal.getTime());
                         //csv ファイルの中身　歩行者の位置モデルの指揮　altitudeは気圧センサ accZ : 歩数
-
+                    try {
                         double Azideg = Math.toDegrees(azimuth);
                         double Pitchdeg = Math.toDegrees(pitch);
                         double Rolldeg = Math.toDegrees(roll);
-
                         String SensorStream =
-                                String.format("%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)),(float) (1 * Math.cos(azimuth)),Altitude,Pitchdeg,Rolldeg,Azideg,accZ,MagX,MagY,MagZ,APIAzi);
+                                            String.format("%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)),(float) (1 * Math.cos(azimuth)),Altitude,Pitchdeg,Rolldeg,Azideg,accZ,MagX,MagY,MagZ,APIAzi);
+                        /*
+                        Timer timer = new Timer();
+                        TimerTask task = new TimerTask(){
+                            public void run(){
 
-                        //String nametag =
-                        //        String.format("East,North,Altitude,Pitch,Roll,Azimuth,Stepnumber,MagX,MagY,MagZ,UncariMagX,UncariMagY,UncariMagZ");
-
-  //                      String Time = String.format("%4d %2d %2d %2d %2d%11.7f", value.Y, value.M, value.D, value.h, value.m, value.s);
-                        //mFileAccAzWriter.write(nametag);
-                        //mFileAccAzWriter.newLine();
+                            }
+                        };
+                        timer.scheduleAtFixedRate(task,1000,1000);
+                        */
 
                         mFileAccAzWriter.write(SensorStream);
                         mFileAccAzWriter.newLine();
-
-                       // String day=
-                        //        String.format("%6d,%6d,%6d,%13.7f,\t",gnsstimeclock_a,gnsstimeclock_b,gnsstimeclock_c,gnsstimeclock_d,myName);
-                      // mFileAccAzWriter.write(day);
-                    //    String time=
-//                               String.format("%13.7f",myName);
-                      //  mFileAccAzWriter.write(myName);
-
-
-                        /*
-                        String SensorData = String.format("%f,%f,%f", azimuth, (float) (accZ * Math.sin(azimuth)), accZ);
-
-                        mFileAccAzWriter.write(SensorData);
-                        mFileAccAzWriter.newLine();
-
-                         */
-
                     } catch (IOException e) {
                         Toast.makeText(mContext, "ERROR_WRITING_FILE", Toast.LENGTH_SHORT).show();
                         logException(ERROR_WRITING_FILE, e);
                     }
+
+                };
+
                 }
             }
         }
-    }
+
     @Override
     public void onGnssNavigationMessageStatusChanged(int status) {
     }
@@ -1250,10 +1249,9 @@ public class FileLogger implements GnssListener {
                         constFullBiasNanos = gnssClock.getFullBiasNanos();
                     }
                 }
-                //Log.d("ConstBias",String.valueOf(constFullBiasNanos%1e5));
-                //Log.d("InstBias",String.valueOf((gnssClock.getFullBiasNanos()%1e5)));
-                //Log.d("TimeNanosBias",String.valueOf(((gnssClock.getFullBiasNanos()%1e5) - (constFullBiasNanos%1e5))));
                 double tRxNanos = gnssClock.getTimeNanos() - constFullBiasNanos - weekNumberNanos;
+
+
                 //GPS週・週秒から年月日時分秒に変換
                 GPSWStoGPST gpswStoGPST = new GPSWStoGPST();
                 ReturnValue value = gpswStoGPST.method(weekNumber, tRxNanos * 1e-9);
@@ -1313,7 +1311,14 @@ public class FileLogger implements GnssListener {
                                 OBSTime = String.format("> %4d %2d %2d %2d %2d%11.7f  0", value.Y, value.M, value.D, value.h, value.m, value.s);
                                 SensorStream =
                                         String.format("%6d,%6d,%6d,%6d,%6d,%13.7f", value.Y, value.M, value.D, value.h, value.m, value.s);
-                                //firstOBS = false;
+                                gnsstimeclock_a = value.Y;
+                                gnsstimeclock_b = value.M;
+                                gnsstimeclock_c = value.D;
+                                gnsstimeclock_d = value.h;
+                                gnsstimeclock_e = value.m;
+                                gnsstimeclock_f = value.s;
+                                Time.append(OBSTime);
+                                firstOBS = false;
 
                             }
                             //GPSのPRN番号と時刻用String
@@ -1878,12 +1883,12 @@ public class FileLogger implements GnssListener {
                                 SensorStream =
                                         String.format("%6d,%6d,%6d,%6d,%6d,%13.7f", value.Y, value.M, value.D, value.h, value.m, value.s);
                                 //メモで
-                                gnsstimeclock_a = value.D;
-                                gnsstimeclock_b = value.h;
-                                gnsstimeclock_c = value.m;
-                                gnsstimeclock_d = value.s;
-                                gnsstimeclock_e = value.M;
-                                gnsstimeclock_f = value.Y;
+                                gnsstimeclock_a = value.Y;
+                                gnsstimeclock_b = value.M;
+                                gnsstimeclock_c = value.D;
+                                gnsstimeclock_d = value.h;
+                                gnsstimeclock_e = value.m;
+                                gnsstimeclock_f = value.s;
                                 Time.append(OBSTime);
                                 firstOBS = false;
                             }
@@ -2101,9 +2106,11 @@ public class FileLogger implements GnssListener {
                 //Log.d("InstBias",String.valueOf((gnssClock.getFullBiasNanos()%1e5)));
                 //Log.d("TimeNanosBias",String.valueOf(((gnssClock.getFullBiasNanos()%1e5) - (constFullBiasNanos%1e5))));
                 double tRxNanos = gnssClock.getTimeNanos() - constFullBiasNanos - weekNumberNanos;
+
                 //GPS週・週秒から年月日時分秒に変換
                 GPSWStoGPST gpswStoGPST = new GPSWStoGPST();
                 ReturnValue value = gpswStoGPST.method(weekNumber, tRxNanos * 1e-9);
+
                 for (GnssMeasurement measurement : event.getMeasurements()) {
                     if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_GPS || (measurement.getConstellationType() == GnssStatus.CONSTELLATION_GLONASS && SettingsFragment.useGL) || (measurement.getConstellationType() == GnssStatus.CONSTELLATION_QZSS&& SettingsFragment.useQZ) || ((measurement.getConstellationType() == GnssStatus.CONSTELLATION_GALILEO)&&(SettingsFragment.useGA))  || (measurement.getConstellationType() == GnssStatus.CONSTELLATION_BEIDOU && SettingsFragment.useBD)) {
                         double tRxSeconds = (tRxNanos - measurement.getTimeOffsetNanos()) * 1e-9;
@@ -2159,7 +2166,14 @@ public class FileLogger implements GnssListener {
                                 OBSTime = String.format("> %4d %2d %2d %2d %2d%11.7f  0", value.Y, value.M, value.D, value.h, value.m, value.s);
                                 SensorStream =
                                         String.format("%6d,%6d,%6d,%6d,%6d,%13.7f", value.Y, value.M, value.D, value.h, value.m, value.s);
-                                //firstOBS = false;
+                                gnsstimeclock_a = value.Y;
+                                gnsstimeclock_b = value.M;
+                                gnsstimeclock_c = value.D;
+                                gnsstimeclock_d = value.h;
+                                gnsstimeclock_e = value.m;
+                                gnsstimeclock_f = value.s;
+                                Time.append(OBSTime);
+                                firstOBS = false;
                             }
                             //GPSのPRN番号と時刻用String
                             double CarrierCycles = measurement.getAccumulatedDeltaRangeMeters()/GPS_L1_WAVELENGTH;
@@ -2335,6 +2349,12 @@ public class FileLogger implements GnssListener {
                                 String OBSTime = String.format(" %2d %2d %2d %2d %2d%11.7f  0", value.Y - 2000, value.M, value.D, value.h, value.m, value.s);
                                 SensorStream =
                                         String.format("%6d,%6d,%6d,%6d,%6d,%13.7f", value.Y, value.M, value.D, value.h, value.m, value.s);
+                                gnsstimeclock_a = value.Y;
+                                gnsstimeclock_b = value.M;
+                                gnsstimeclock_c = value.D;
+                                gnsstimeclock_d = value.h;
+                                gnsstimeclock_e = value.m;
+                                gnsstimeclock_f = value.s;
                                 Time.append(OBSTime);
                                 firstOBS = false;
                             }
