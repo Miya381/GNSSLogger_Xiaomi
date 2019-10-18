@@ -134,7 +134,7 @@ public class GnssNavigationConv {
     private static final int I1UTC_INDEX = 150;
 
 
-    public int onNavMessageReported(int prn, int type, int page, int subframe, byte[] rawData, Context mContext) {
+     public int onNavMessageReported(int prn, int type, int page, int subframe, byte[] rawData, Context mContext) {
         if(rawData == null || type != GnssNavigationMessage.TYPE_GPS_L1CA){
             return -2;
         }
@@ -143,7 +143,7 @@ public class GnssNavigationConv {
         StringBuilder NavMessage = new StringBuilder();
             switch (subframe) {
                 case 1:
-                    //handleFirstSubframe(prn, rawData);
+                    handleFirstSubframe(prn, rawData);
                     Log.i("Navigation",getNAVType(type) + String.valueOf(prn) + "First SubFrame");
                     break;
                 case 2:
@@ -167,7 +167,7 @@ public class GnssNavigationConv {
             return state;
     }
 
-    private void handleFirstSubframe(byte prn, byte[] rawData) {
+    private void handleFirstSubframe(int prn, byte[] rawData) {
         int iodc = extractBits(IODC1_INDEX, IODC1_LENGTH, rawData) << 8;
         iodc |= extractBits(IODC2_INDEX, IODC2_LENGTH, rawData);
 
@@ -198,6 +198,7 @@ public class GnssNavigationConv {
         String broadcastorbit_1 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",iode,crs,deltaN,m0);
         Log.i("Navigation",broadcastorbit_1);
 
+
         double cuc = (short) extractBits(CUC_INDEX, CUC_LENGTH, rawData) * POW_2_NEG_29;
 
         // an unsigned 32 bit value
@@ -211,9 +212,11 @@ public class GnssNavigationConv {
         double toe = extractBits(TOE_INDEX, TOE_LENGTH, rawData) * POW_2_4;
         double toeScaled = toe * POW_2_4;
 
+
+
     }
 /*
-    private void handleThirdSubframe(byte prn, byte[] rawData) {
+    private void handleThirdSubframe(int prn, byte[] rawData) {
 
         int iode = extractBits(IODE2_INDEX, IODE_LENGTH, rawData);
 

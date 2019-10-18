@@ -601,7 +601,12 @@ public class FileLogger implements GnssListener {
                 try {
                     currentFileNavWriter.write("     3.03           N: GNSS NAV DATA    M: MIXED            RINEX VERSION / TYPE");
                     currentFileNavWriter.newLine();
-                    currentFileNavWriter.write("                                                            PGM / RUN BY / DATE");
+                    String PGM = String.format("%-20s", "GRitz Logger");
+                    String RUNBY = String.format("%-20s", Build.MODEL);
+                    String DATE = String.format("%-20s", now.getTime());
+                    currentFileNavWriter.write(PGM + RUNBY + DATE + "UTC PGM / RUN BY / DATE");
+                    currentFileNavWriter.newLine();
+                    currentFileNavWriter.write("                                                            END OF HEADER       ");
                     currentFileNavWriter.newLine();
                 } catch (IOException e) {
                     Toast.makeText(mContext, "Count not initialize observation file", Toast.LENGTH_SHORT).show();
@@ -965,22 +970,60 @@ public class FileLogger implements GnssListener {
                 if(mFileNavWriter == null){
                     return;
                 }
-                /*try {
+                /*
+                StringBuilder builder = new StringBuilder("Nav");
+                builder.append(RECORD_DELIMITER);
+                builder.append(navigationMessage.getSvid());
+                builder.append(RECORD_DELIMITER);
+                builder.append(navigationMessage.getType());
+                builder.append(RECORD_DELIMITER);
+
+                int status = navigationMessage.getStatus();
+                builder.append(status);
+                builder.append(RECORD_DELIMITER);
+                builder.append(navigationMessage.getMessageId());
+                builder.append(RECORD_DELIMITER);
+                builder.append(navigationMessage.getSubmessageId());
+                byte[] data = navigationMessage.getData();
+                for (byte word : data) {
+                    builder.append(RECORD_DELIMITER);
+                    builder.append(word);
+                }
+                try {
+                    mFileNavWriter.write(builder.toString());
+                    mFileNavWriter.newLine();
+                } catch (IOException e) {
+                    logException(ERROR_WRITING_FILE, e);
+                }
+                 */
+
+
+/*
+                try {
                     if(RINEX_NAV_ION_OK == false) {
                         StringBuilder NAV_ION = new StringBuilder();
                         GnssNavigationConv mGnssNavigationConv = new GnssNavigationConv();
-                        StringBuilder ION = mGnssNavigationConv.onNavMessageReported((byte) navigationMessage.getSvid(),(byte)navigationMessage.getType(),navigationMessage.getMessageId(),navigationMessage.getSubmessageId(),navigationMessage.getData());
+                        int ION = mGnssNavigationConv.onNavMessageReported((byte) navigationMessage.getSvid(),(byte)navigationMessage.getType(),navigationMessage.getMessageId(),navigationMessage.getSubmessageId(),navigationMessage.getData(),mContext);
                         if(ION != null && ION.toString().indexOf("null") == -1) {
                             NAV_ION.append(ION);
                             Log.d("NAV",ION.toString());
-                            mFileNavWriter.write(NAV_ION.toString());
+                        String abc = mGnssNavigationConv.handleFirstSubframe(navigationMessage.getSubmessageId(),navigationMessage.getData());
+                        mFileNavWriter.write(abc);
+                        mFileNavWriter.newLine();
+                        mFileNavWriter.write(NAV_ION.toString());
+                        mFileNavWriter.newLine();
+
                             RINEX_NAV_ION_OK = true;
                         }
                     }
                 }catch (IOException e){
                     Toast.makeText(mContext, "ERROR_WRITING_FILE", Toast.LENGTH_SHORT).show();
                     logException(ERROR_WRITING_FILE, e);
-                }*/
+                }
+
+ */
+
+
             }
         }
     }
@@ -1318,7 +1361,7 @@ public class FileLogger implements GnssListener {
                                 gnsstimeclock_e = value.m;
                                 gnsstimeclock_f = value.s;
                                 Time.append(OBSTime);
-                                firstOBS = false;
+                                //firstOBS = false;
 
                             }
                             //GPSのPRN番号と時刻用String
