@@ -2173,7 +2173,6 @@ public class FileLogger implements GnssListener {
                                 gnsstimeclock_e = value.m;
                                 gnsstimeclock_f = value.s;
                                 Time.append(OBSTime);
-                                firstOBS = false;
                             }
                             //GPSのPRN番号と時刻用String
                             double CarrierCycles = measurement.getAccumulatedDeltaRangeMeters()/GPS_L1_WAVELENGTH;
@@ -2298,7 +2297,8 @@ public class FileLogger implements GnssListener {
                     mFileAccAzWriter.write(SensorStream);
                     mFileAccAzWriter.newLine();
                 }
-            }else {
+            }
+            else {
                 for (GnssMeasurement measurement : event.getMeasurements()) {
                     if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_GPS) {
                         GnssClock gnssClock = event.getClock();
@@ -2356,7 +2356,7 @@ public class FileLogger implements GnssListener {
                                 gnsstimeclock_e = value.m;
                                 gnsstimeclock_f = value.s;
                                 Time.append(OBSTime);
-                                firstOBS = false;
+                                //firstOBS = false;
                             }
                             //GPSのPRN番号と時刻用String
                             if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6, TOLERANCE_MHZ)) {
