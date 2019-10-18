@@ -19,6 +19,7 @@ import java.util.TimerTask;
  * @author
  *
  */
+//確認
 public class SensorContainer {
     //センサ生データ用
     private String sensorRaw[] = new String[6];
