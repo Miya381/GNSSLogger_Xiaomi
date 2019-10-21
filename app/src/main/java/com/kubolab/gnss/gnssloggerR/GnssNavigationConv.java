@@ -134,9 +134,9 @@ public class GnssNavigationConv {
     private static final int I1UTC_INDEX = 150;
 
 
-     public int onNavMessageReported(int prn, int type, int page, int subframe, byte[] rawData, Context mContext) {
+     public void onNavMessageReported(int prn, int type, int page, int subframe, byte[] rawData, Context mContext) {
         if(rawData == null || type != GnssNavigationMessage.TYPE_GPS_L1CA){
-            return -2;
+            return ;
         }
         //Log.i("Navigation",String.valueOf(subframe));
         int state = -1;
@@ -151,7 +151,7 @@ public class GnssNavigationConv {
                     Log.i("Navigation",getNAVType(type) + String.valueOf(prn) + "Second SubFrame");
                     break;
                 case 3:
-                    //handleThirdSubframe(prn, rawData);
+                    handleThirdSubframe(prn, rawData);
                     Log.i("Navigation",getNAVType(type) + String.valueOf(prn) + "Third SubFrame");
                     break;
                 case 4:
@@ -164,25 +164,30 @@ public class GnssNavigationConv {
                     // invalid message id
                     throw new IllegalArgumentException("Invalid Subframe ID: " + subframe);
             }
-            return state;
+            return ;
     }
 
     private void handleFirstSubframe(int prn, byte[] rawData) {
         int iodc = extractBits(IODC1_INDEX, IODC1_LENGTH, rawData) << 8;
         iodc |= extractBits(IODC2_INDEX, IODC2_LENGTH, rawData);
 
-
         // the navigation message contains a modulo-1023 week number
         int week = extractBits(WEEK_INDEX, WEEK_LENGTH, rawData);
         int uraIndex = extractBits(URA_INDEX, URA_LENGTH, rawData);
         int svHealth = extractBits(SV_HEALTH_INDEX, SV_HEALTH_LENGTH, rawData);
         byte tgd = (byte) extractBits(TGD_INDEX, TGD_LENGTH, rawData);
+        String broadcastorbit_6 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",uraIndex,svHealth,tgd,iodc);
+        Log.i("Navigation",broadcastorbit_6);
+
         int toc = extractBits(TOC_INDEX, TOC_LENGTH, rawData);
         double tocScaled = toc * POW_2_4;
         byte af2 = (byte) extractBits(AF2_INDEX, AF2_LENGTH, rawData);
         short af1 = (short) extractBits(AF1_INDEX, AF1_LENGTH, rawData);
         int af0 = extractBits(AF0_INDEX, AF0_LENGTH, rawData);
         af0 = getTwoComplement(af0, AF0_LENGTH);
+        String Epoch_Sv_Clk = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",tocScaled,af0,af1,af2);
+        Log.i("Navigation", Epoch_Sv_Clk);
+
     }
 
     private void handleSecondSubframe(byte[] rawData) {
@@ -209,17 +214,19 @@ public class GnssNavigationConv {
         // an unsigned 32 bit value
         double a = buildUnsigned32BitsWordFrom8And24Words(A_INDEX8, A_INDEX24, rawData) * POW_2_NEG_19;
 
+        String broadcastorbit_2 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",cuc, e , cus , a);
+        Log.i("Navigation",broadcastorbit_2);
+
         double toe = extractBits(TOE_INDEX, TOE_LENGTH, rawData) * POW_2_4;
         double toeScaled = toe * POW_2_4;
 
-
-
     }
-/*
+
     private void handleThirdSubframe(int prn, byte[] rawData) {
 
         int iode = extractBits(IODE2_INDEX, IODE_LENGTH, rawData);
 
+        /*
         IntermediateEphemeris intermediateEphemeris =
                 findIntermediateEphemerisToUpdate(prn, SUBFRAME_3, iode);
         if (intermediateEphemeris == null) {
@@ -230,36 +237,45 @@ public class GnssNavigationConv {
         GpsEphemerisProto gpsEphemerisProto = intermediateEphemeris.getEphemerisObj();
         gpsEphemerisProto.iode = iode;
 
-        short cic = (short) extractBits(CIC_INDEX, CIC_LENGTH, rawData);
-        gpsEphemerisProto.cic = cic * POW_2_NEG_29;
+         */
 
-        int o0 = (int) buildUnsigned32BitsWordFrom8And24Words(O0_INDEX8, O0_INDEX24, rawData);
-        gpsEphemerisProto.omega0 = o0 * POW_2_NEG_31 * Math.PI;
+        double cic = (short) extractBits(CIC_INDEX, CIC_LENGTH, rawData) * POW_2_NEG_29 ;
+        //gpsEphemerisProto.cic = cic * POW_2_NEG_29;
 
-        int o = (int) buildUnsigned32BitsWordFrom8And24Words(O_INDEX8, O_INDEX24, rawData);
-        gpsEphemerisProto.omega = o * POW_2_NEG_31 * Math.PI;
+        double o0 = (int) buildUnsigned32BitsWordFrom8And24Words(O0_INDEX8, O0_INDEX24, rawData)* POW_2_NEG_31 * Math.PI;
+        //gpsEphemerisProto.omega0 = o0 * POW_2_NEG_31 * Math.PI;
+
+        double o = (int) buildUnsigned32BitsWordFrom8And24Words(O_INDEX8, O_INDEX24, rawData) * POW_2_NEG_31 * Math.PI ;
+        //gpsEphemerisProto.omega = o * POW_2_NEG_31 * Math.PI;
 
         int odot = extractBits(ODOT_INDEX, ODOT_LENGTH, rawData);
-        odot = getTwoComplement(odot, ODOT_LENGTH);;
-        gpsEphemerisProto.omegaDot = o * POW_2_NEG_43 * Math.PI;
+        double Omegadot = getTwoComplement(odot, ODOT_LENGTH)* POW_2_NEG_43 * Math.PI;
+        //gpsEphemerisProto.omegaDot = o * POW_2_NEG_43 * Math.PI;
 
-        short cis = (short) extractBits(CIS_INDEX, CIS_LENGTH, rawData);
-        gpsEphemerisProto.cis = cis * POW_2_NEG_29;
+        double cis = (short) extractBits(CIS_INDEX, CIS_LENGTH, rawData)* POW_2_NEG_29;
+        //gpsEphemerisProto.cis = cis * POW_2_NEG_29;
 
-        int i0 = (int) buildUnsigned32BitsWordFrom8And24Words(I0_INDEX8, I0_INDEX24, rawData);
-        gpsEphemerisProto.i0 = i0 * POW_2_NEG_31 * Math.PI;
+        String broadcastorbit_3 = String.format("    %1.12E,%1.12E,%1.12E", cic , o , cis);
+        Log.i("Navigation",broadcastorbit_3);
 
-        short crc = (short) extractBits(CRC_INDEX, CRC_LENGTH, rawData);
-        gpsEphemerisProto.crc = crc * POW_2_NEG_5;
+        double i0 = (int) buildUnsigned32BitsWordFrom8And24Words(I0_INDEX8, I0_INDEX24, rawData)* POW_2_NEG_31 * Math.PI;
+        //gpsEphemerisProto.i0 = i0 * POW_2_NEG_31 * Math.PI;
+
+        double crc = (short) extractBits(CRC_INDEX, CRC_LENGTH, rawData)* POW_2_NEG_5;
+        //gpsEphemerisProto.crc = crc * POW_2_NEG_5;
 
 
         // a 14-bit two's complement number
         int idot = extractBits(IDOT_INDEX, IDOT_LENGTH, rawData);
-        idot = getTwoComplement(idot, IDOT_LENGTH);
-        gpsEphemerisProto.iDot = idot * POW_2_NEG_43 * Math.PI;
+        double Idot = getTwoComplement(idot, IDOT_LENGTH)* POW_2_NEG_43 * Math.PI;
+        //gpsEphemerisProto.iDot = idot * POW_2_NEG_43 * Math.PI;
 
-        updateDecodedState(prn, SUBFRAME_3, intermediateEphemeris);
-    }*/
+        String broadcastorbit_4 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",i0, crc , o0 , Omegadot);
+        Log.i("Navigation",broadcastorbit_4);
+
+        //updateDecodedState(prn, SUBFRAME_3, intermediateEphemeris);
+    }
+
 
     int handleFourthSubframe(int page, byte[] rawData, Context mContext) {
         /*byte pageId = (byte) extractBits(62, 6, rawData);*/
