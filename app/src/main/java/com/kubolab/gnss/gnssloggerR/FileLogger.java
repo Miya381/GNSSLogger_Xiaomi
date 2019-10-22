@@ -970,7 +970,8 @@ public class FileLogger implements GnssListener {
                 if(mFileNavWriter == null){
                     return;
                 }
-                /*
+
+/*
                 StringBuilder builder = new StringBuilder("Nav");
                 builder.append(RECORD_DELIMITER);
                 builder.append(navigationMessage.getSvid());
@@ -995,34 +996,63 @@ public class FileLogger implements GnssListener {
                 } catch (IOException e) {
                     logException(ERROR_WRITING_FILE, e);
                 }
-                 */
+
+ */
 
 
-/*
-                try {
+                    /*
+
                     if(RINEX_NAV_ION_OK == false) {
-                        StringBuilder NAV_ION = new StringBuilder();
-                        GnssNavigationConv mGnssNavigationConv = new GnssNavigationConv();
+                        //StringBuilder NAV_ION = new StringBuilder();
+
+
                         int ION = mGnssNavigationConv.onNavMessageReported((byte) navigationMessage.getSvid(),(byte)navigationMessage.getType(),navigationMessage.getMessageId(),navigationMessage.getSubmessageId(),navigationMessage.getData(),mContext);
                         if(ION != null && ION.toString().indexOf("null") == -1) {
                             NAV_ION.append(ION);
                             Log.d("NAV",ION.toString());
-                        String abc = mGnssNavigationConv.handleFirstSubframe(navigationMessage.getSubmessageId(),navigationMessage.getData());
-                        mFileNavWriter.write(abc);
-                        mFileNavWriter.newLine();
+
+
                         mFileNavWriter.write(NAV_ION.toString());
                         mFileNavWriter.newLine();
 
-                            RINEX_NAV_ION_OK = true;
-                        }
-                    }
+                          RINEX_NAV_ION_OK = true;
+
+                       }
+
+                         */
+
+
+                try {
+                    GnssNavigationConv mGnssNavigationConv = new GnssNavigationConv();
+                    String prn_epoch_sv_clk = mGnssNavigationConv.Prn_Epoch_Sv_Clk(navigationMessage.getSubmessageId(),navigationMessage.getData());
+                    String broadcastorbit_1 = mGnssNavigationConv.BroadcastOrbit_1(navigationMessage.getSubmessageId(),navigationMessage.getData());
+                    String broadcastorbit_2 = mGnssNavigationConv.BroadcastOrbit_2(navigationMessage.getSubmessageId(),navigationMessage.getData());
+                    String broadcastorbit_3 = mGnssNavigationConv.BroadcastOrbit_3(navigationMessage.getSubmessageId(),navigationMessage.getData());
+                    String broadcastorbit_4 = mGnssNavigationConv.BroadcastOrbit_4(navigationMessage.getSubmessageId(),navigationMessage.getData());
+                    String broadcastorbit_5 = mGnssNavigationConv.BroadcastOrbit_5(navigationMessage.getSubmessageId(),navigationMessage.getData());
+                    String broadcastorbit_6 = mGnssNavigationConv.BroadcastOrbit_6(navigationMessage.getSubmessageId(),navigationMessage.getData());
+                    mFileNavWriter.write(prn_epoch_sv_clk);
+                    mFileNavWriter.newLine();
+                    mFileNavWriter.write(broadcastorbit_1);
+                    mFileNavWriter.newLine();
+                    mFileNavWriter.write(broadcastorbit_2);
+                    mFileNavWriter.newLine();
+                    mFileNavWriter.write(broadcastorbit_3);
+                    mFileNavWriter.newLine();
+                    mFileNavWriter.write(broadcastorbit_4);
+                    mFileNavWriter.newLine();
+                    mFileNavWriter.write(broadcastorbit_5);
+                    mFileNavWriter.newLine();
+                    mFileNavWriter.write(broadcastorbit_6);
+                    mFileNavWriter.newLine();
+
+                    byte [] abc = navigationMessage.getData();
+                    mFileNavWriter.write(String.valueOf(abc));
+                    mFileNavWriter.newLine();
                 }catch (IOException e){
                     Toast.makeText(mContext, "ERROR_WRITING_FILE", Toast.LENGTH_SHORT).show();
                     logException(ERROR_WRITING_FILE, e);
                 }
-
- */
-
 
             }
         }
