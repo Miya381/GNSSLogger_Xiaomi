@@ -355,10 +355,10 @@ public class FileLogger implements GnssListener {
                         currentFileWriter.write("     0                                                      RCV CLOCK OFFS APPL ");
                     currentFileWriter.newLine();
                     if(SettingsFragment.CarrierPhase){
-                        currentFileWriter.write("G    6 C1C L1C S1C C5X L5X S5X                              SYS / # / OBS TYPES ");
+                        currentFileWriter.write("G    8 C1C L1C D5C S1C C5X L5X D5X S5X                      SYS / # / OBS TYPES ");
                         currentFileWriter.newLine();
                     }else {
-                        currentFileWriter.write("G    4 C1C S1C C5X S5X                                      SYS / # / OBS TYPES ");
+                        currentFileWriter.write("G    6 C1C D1C S1C C5X D5X S5X                              SYS / # / OBS TYPES ");
                         currentFileWriter.newLine();
                     }
                     if(SettingsFragment.useGL){
@@ -372,19 +372,19 @@ public class FileLogger implements GnssListener {
                     }
                     if(SettingsFragment.useQZ){
                         if(SettingsFragment.CarrierPhase){
-                            currentFileWriter.write("J    6 C1C L1C S1C C5X L5X S5X                              SYS / # / OBS TYPES ");
+                            currentFileWriter.write("J    8 C1C L1C D1C S1C C5X L5X D5X S5X                      SYS / # / OBS TYPES ");
                             currentFileWriter.newLine();
                         }else {
-                            currentFileWriter.write("J    4 C1C S1C C5X S5X                                      SYS / # / OBS TYPES ");
+                            currentFileWriter.write("J    6 C1C D1C S1C C5X D5X S5X                              SYS / # / OBS TYPES ");
                             currentFileWriter.newLine();
                         }
                     }
                     if(SettingsFragment.useGA){
                         if(SettingsFragment.CarrierPhase){
-                            currentFileWriter.write("E    6 C1X L1X S1X C5X L5X S5X                              SYS / # / OBS TYPES ");
+                            currentFileWriter.write("E    8 C1X L1X D1X S1X C5X L5X D5X S5X                      SYS / # / OBS TYPES ");
                             currentFileWriter.newLine();
                         }else {
-                            currentFileWriter.write("E    4 C1C S1C C5X S5X                                      SYS / # / OBS TYPES ");
+                            currentFileWriter.write("E    4 C1X D1X S1X C5X D5X S5X                              SYS / # / OBS TYPES ");
                             currentFileWriter.newLine();
                         }
                     }
@@ -778,13 +778,18 @@ public class FileLogger implements GnssListener {
         }
         //Log.i("progress","dismiss");
         //mUiComponent.ShowProgressWindow(false);
+
     } //各ファイル保存
 
     @Override
-    public void onProviderEnabled(String provider) {}
+    public void onProviderEnabled(String provider) {
+
+    }
 
     @Override
-    public void onProviderDisabled(String provider) {}
+    public void onProviderDisabled(String provider) {
+
+    }
 
     @Override
     public void onLocationChanged(Location location) {
@@ -971,7 +976,7 @@ public class FileLogger implements GnssListener {
                     return;
                 }
 
-/*
+
                 StringBuilder builder = new StringBuilder("Nav");
                 builder.append(RECORD_DELIMITER);
                 builder.append(navigationMessage.getSvid());
@@ -986,10 +991,11 @@ public class FileLogger implements GnssListener {
                 builder.append(RECORD_DELIMITER);
                 builder.append(navigationMessage.getSubmessageId());
                 byte[] data = navigationMessage.getData();
-                for (byte word : data) {
-                    builder.append(RECORD_DELIMITER);
-                    builder.append(word);
-                }
+                //for (byte word : data) {
+                builder.append(data);
+                builder.append(RECORD_DELIMITER);
+                   // builder.append(word);
+                //}
                 try {
                     mFileNavWriter.write(builder.toString());
                     mFileNavWriter.newLine();
@@ -997,7 +1003,7 @@ public class FileLogger implements GnssListener {
                     logException(ERROR_WRITING_FILE, e);
                 }
 
- */
+
 
 
                     /*
@@ -1073,6 +1079,7 @@ public class FileLogger implements GnssListener {
                         double Rolldeg = Math.toDegrees(roll);
                         String SensorStream =
                                             String.format("%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)),(float) (1 * Math.cos(azimuth)),Altitude,Pitchdeg,Rolldeg,Azideg,accZ,MagX,MagY,MagZ,APIAzi);
+
                         /*
                         Timer timer = new Timer();
                         TimerTask task = new TimerTask(){
@@ -2247,6 +2254,7 @@ public class FileLogger implements GnssListener {
                                 gnsstimeclock_f = value.s;
                                 Time.append(OBSTime);
                             }
+
                             //GPSのPRN番号と時刻用String
                             double CarrierCycles = measurement.getAccumulatedDeltaRangeMeters()/GPS_L1_WAVELENGTH;
                             double absCC = Math.abs(CarrierCycles);
@@ -2312,7 +2320,7 @@ public class FileLogger implements GnssListener {
                                 index = index + 235;
                             }
                             if(!SettingsFragment.usePseudorangeRate && measurement.getAccumulatedDeltaRangeState() != GnssMeasurement.ADR_STATE_VALID){
-                                CURRENT_SMOOTHER_RATE[index] = 1.0;
+                                CURRENT_SMOOTHER_RATE[index] = 0.99;
                             }
                             //Pseudorange Smoother
                             if(SettingsFragment.usePseudorangeSmoother &&  prm != 0.0){
@@ -2335,20 +2343,21 @@ public class FileLogger implements GnssListener {
                             }
                             String D1C = String.format("%14.3f%s%s", -measurement.getPseudorangeRateMetersPerSecond() / GPS_L1_WAVELENGTH, " ", " ");
                             String S1C = String.format("%14.3f%s%s", measurement.getCn0DbHz(), " ", " ");
+
                             //Fix用チェック
                             if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 154.0 * 10.23e6, TOLERANCE_MHZ)) {
                                 if (SettingsFragment.CarrierPhase) {
                                      if(absCC > 1e4) {
                                         if (firstOBS) {
-                                            Measurements.append(prn + C1C + L1C + S1C);
+                                            Measurements.append(prn + C1C + L1C + D1C + S1C);
                                             firstOBS = false;
                                         } else {
-                                            Measurements.append("\n" + prn + C1C + L1C + S1C);
+                                            Measurements.append("\n" + prn + C1C + L1C + D1C + S1C);
                                         }
                                      }
                                 } else {
                                     if (firstOBS) {
-                                        Measurements.append(prn + C1C  + S1C);
+                                        Measurements.append(prn + C1C  + D1C + S1C);
                                         firstOBS = false;
                                     } else {
                                         Measurements.append("\n" + prn + C1C + S1C);

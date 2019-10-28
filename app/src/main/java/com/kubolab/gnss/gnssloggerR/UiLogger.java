@@ -41,6 +41,7 @@ public class UiLogger implements GnssListener {
     private static final double GPS_L1_WAVELENGTH = SPEED_OF_LIGHT/GPS_L1_FREQ;
     private static final double GPS_L5_WAVELENGTH = SPEED_OF_LIGHT/GPS_L5_FREQ;
 
+
     private static final int USED_COLOR = Color.rgb(0x4a, 0x5f, 0x70);
     private double trueAzimuth;
     private double Declination;
@@ -716,10 +717,12 @@ public class UiLogger implements GnssListener {
                     } else if (prSeconds < 0 || prSeconds > 0.5) {
                         array[arrayRow][1] = "INVALID_VALUE";
                         prm = 0.0;
-                    } else if (getStateName(measurement.getState()) == "1") {
+                    }
+                    else if (getStateName(measurement.getState()) == "1") {
                         array[arrayRow][1] = String.format("%14.3f", prm);
                         CheckClockSync = true;
-                    } else {
+                    }
+                    else {
                         //array[arrayRow][1] = getStateName(measurement.getState());
                         array[arrayRow][1] = String.format("%14.3f", measurement.getPseudorangeRateMetersPerSecond());
                     }
@@ -834,6 +837,24 @@ public class UiLogger implements GnssListener {
     }
         return array;
 }
+
+/*
+public static double getDopplershift (float carrierFrequencyhz){
+    final float TOLERANCE_MHZ = 100000000f;
+
+    if  (Mathutil.fuzzyEquals(carrierFrequencyhz, 154.0 * 10.23e6f, TOLERANCE_MHZ)) {
+
+        return "L1";
+    } //else if (Mathutil.fuzzyEquals(carrierFrequencyMhz, 1176.45f, TOLERANCE_MHZ)) {
+    // return "L5";
+    //  }
+    else {
+        return "L5";
+    }
+}
+
+ */
+
     public static String getCarrierFrequencyLabel(float carrierFrequencyhz) {
         final float TOLERANCE_MHZ = 100000000f;
 
