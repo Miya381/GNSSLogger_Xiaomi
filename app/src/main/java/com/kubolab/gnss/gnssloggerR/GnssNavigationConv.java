@@ -183,6 +183,7 @@ public class GnssNavigationConv {
             return state;
     }
 
+    //NavigationMessageメインメソッド
     public void getNavagationMessage (int prn,int status, int type, int page, int subframe, byte[] rawData){
          if (status == 1){
              switch(type){
@@ -198,6 +199,7 @@ public class GnssNavigationConv {
          }
     }
 
+    //各フレームごとにRINEXフォーマットに並びかえる
     public void Handlesubframe (int prn, int subframe, byte[] rawData){
          switch (subframe){
              case 1:
@@ -210,16 +212,72 @@ public class GnssNavigationConv {
          }
     }
 
-    public void HandleGPSsubframe(byte[] rawData){
-         /*
-        for (int i=0; i< GPSSubframe.size(); i++){
-            GPSSubframe[i] = rawData;
+    //衛星システムごとにNavigationMessageを取得
+    public void HandleGPSsubframe(int subframe, byte[] rawData){
+        byte[] GPSsubframe = rawData;
+         switch (subframe) {
+             case 1:
+                 /*
+                 int word1 = GPSsubframe[0] + GPSsubframe[1] + GPSsubframe[2] + GPSsubframe[3];
+                 int word2 = GPSsubframe[4] + GPSsubframe[5] + GPSsubframe[6] + GPSsubframe[7];
+                 int word3 = GPSsubframe[8] + GPSsubframe[9] + GPSsubframe[10] + GPSsubframe[11];
+                 int word4 = GPSsubframe[12] + GPSsubframe[13] + GPSsubframe[14] + GPSsubframe[15];
+                 int word5 = GPSsubframe[16] + GPSsubframe[17] + GPSsubframe[18] + GPSsubframe[19];
+                 int word6 = GPSsubframe[20] + GPSsubframe[21] + GPSsubframe[22] + GPSsubframe[23];
+                 int word7 = GPSsubframe[24] + GPSsubframe[25] + GPSsubframe[26] + GPSsubframe[27];
+                 int word8 = GPSsubframe[28] + GPSsubframe[29] + GPSsubframe[30] + GPSsubframe[31];
+                 int word9 = GPSsubframe[32] + GPSsubframe[33] + GPSsubframe[34] + GPSsubframe[35];
+                 int word10 = GPSsubframe[36] + GPSsubframe[37] + GPSsubframe[38] + GPSsubframe[39];
+
+                  */
+
+                 //各ワードごとに変換
+                 String Biword1 = Decimal2Binary(GPSsubframe[0])+ Decimal2Binary(GPSsubframe[1])+ Decimal2Binary(GPSsubframe[2]) + Decimal2Binary(GPSsubframe[3]);
+                 String Biword2 = Decimal2Binary(GPSsubframe[4])+ Decimal2Binary(GPSsubframe[5])+ Decimal2Binary(GPSsubframe[6]) + Decimal2Binary(GPSsubframe[7]);
+                 String Biword3 = Decimal2Binary(GPSsubframe[8])+ Decimal2Binary(GPSsubframe[9])+ Decimal2Binary(GPSsubframe[10]) + Decimal2Binary(GPSsubframe[11]);
+                 String Biword4 = Decimal2Binary(GPSsubframe[12])+ Decimal2Binary(GPSsubframe[13])+ Decimal2Binary(GPSsubframe[14]) + Decimal2Binary(GPSsubframe[15]);
+                 String Biword5 = Decimal2Binary(GPSsubframe[16])+ Decimal2Binary(GPSsubframe[17])+ Decimal2Binary(GPSsubframe[18]) + Decimal2Binary(GPSsubframe[19]);
+                 String Biword6 = Decimal2Binary(GPSsubframe[20])+ Decimal2Binary(GPSsubframe[21])+ Decimal2Binary(GPSsubframe[22]) + Decimal2Binary(GPSsubframe[23]);
+                 String Biword7 = Decimal2Binary(GPSsubframe[24])+ Decimal2Binary(GPSsubframe[25])+ Decimal2Binary(GPSsubframe[26]) + Decimal2Binary(GPSsubframe[27]);
+                 String Biword8 = Decimal2Binary(GPSsubframe[28])+ Decimal2Binary(GPSsubframe[29])+ Decimal2Binary(GPSsubframe[30]) + Decimal2Binary(GPSsubframe[31]);
+                 String Biword9 = Decimal2Binary(GPSsubframe[32])+ Decimal2Binary(GPSsubframe[33])+ Decimal2Binary(GPSsubframe[34]) + Decimal2Binary(GPSsubframe[35]);
+                 String Biword10 = Decimal2Binary(GPSsubframe[36])+ Decimal2Binary(GPSsubframe[37])+ Decimal2Binary(GPSsubframe[38]) + Decimal2Binary(GPSsubframe[39]);
+
+                 String subframe1 = Biword1 + Biword2 + Biword3 + Biword4 + Biword5 + Biword6 + Biword7 + Biword8 + Biword9 + Biword10;
+                 int binary = Integer.parseInt(subframe1);
+                 break;
+             case 2:
+
+                 break;
+             case 3:
+
+                 break;
+             default:
+
+         }
+
+
+
+    }
+
+    public String Decimal2Binary(byte decimal1){
+        int decimal2 = decimal1;
+        String numstr = "";
+
+        while (decimal2 > 0) {
+            int rem = decimal2  % 2;
+
+            if (rem == 1) {
+                numstr = "1" + numstr;
+            } else {
+                numstr = "0" + numstr;
+            }
+            decimal2  = decimal2  / 2;
         }
-          */
-        byte[] frame1 = rawData;
-
-
-
+        if(decimal1 == 0){
+            numstr = "0";
+        }
+        return numstr;
     }
 
 
