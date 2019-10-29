@@ -9,6 +9,7 @@ import android.os.Debug;
 import android.util.Log;
 import android.location.GnssNavigationMessage;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 
@@ -23,6 +24,20 @@ public class GnssNavigationConv {
     private static final int WORD_SIZE_BITS = 30;
     private static final int WORD_PADDING_BITS = 2;
     private static final int BYTE_AS_BITS = 8;
+    private static final int TYPE_BDS_D1 = 1281;
+    private static final int TYPE_BDS_D2 = 1282;
+    private static final int TYPE_GAL_F = 1538;
+    private static final int TYPE_GAL_I = 1537;
+    private static final int TYPE_GLO_L1CA = 769;
+    private static final int TYPE_GPS_CNAV2 = 260;
+    private static final int TYPE_GPS_L1CA = 257;
+    private static final int TYPE_GPS_L2CNAV = 258;
+    private static final int TYPE_GPS_L5CA = 259;
+
+    private ArrayList<String> GPSSubframe = new ArrayList<>();
+    private ArrayList<String> GPSSubframe2 = new ArrayList<>();
+    private ArrayList<String> GPSSubframe3 = new ArrayList<>();
+
     private static final int GPS_CYCLE_WEEKS = 1024;
     private static final int IODE_TO_IODC_MASK = 0xFF;
 
@@ -168,111 +183,45 @@ public class GnssNavigationConv {
             return state;
     }
 
-    public String Prn_Epoch_Sv_Clk (int prn, byte[] rawData){
+    public void getNavagationMessage (int prn,int status, int type, int page, int subframe, byte[] rawData){
+         if (status == 1){
+             switch(type){
+                 case TYPE_GPS_L1CA:
+                     Handlesubframe(prn,subframe,rawData);
+                     break;
+                 case TYPE_GPS_L5CA:
+                     Handlesubframe(prn,subframe,rawData);
+                     break;
+                 default:
 
-        int toc = extractBits(TOC_INDEX, TOC_LENGTH, rawData);
-        double tocScaled = toc * POW_2_4;
-
-        int af0 = extractBits(AF0_INDEX, AF0_LENGTH, rawData);
-        af0 = getTwoComplement(af0, AF0_LENGTH);
-
-        short af1 = (short) extractBits(AF1_INDEX, AF1_LENGTH, rawData);
-
-        byte af2 = (byte) extractBits(AF2_INDEX, AF2_LENGTH, rawData);
-
-        String prn_epoch_sv_clk = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",tocScaled,af0,af1,af2);
-
-        return prn_epoch_sv_clk;
+             }
+         }
     }
 
-    public String BroadcastOrbit_1 (int prn, byte[] rawData){
-        double iode = extractBits(IODE1_INDEX, IODE_LENGTH, rawData);
-
-        double crs = (short) extractBits(CRS_INDEX, CRS_LENGTH, rawData) * POW_2_NEG_5;
-
-        double deltaN = (short) extractBits(DELTA_N_INDEX, DELTA_N_LENGTH, rawData) * POW_2_NEG_43 * Math.PI;
-
-        double m0 = (int) buildUnsigned32BitsWordFrom8And24Words(M0_INDEX8, M0_INDEX24, rawData) * POW_2_NEG_31 * Math.PI;
-
-        String broadcastorbit_1 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",iode,crs,deltaN,m0);
-
-        return broadcastorbit_1;
+    public void Handlesubframe (int prn, int subframe, byte[] rawData){
+         switch (subframe){
+             case 1:
+                 break;
+             case 2:
+                 break;
+             case 3:
+                 break;
+             default:
+         }
     }
 
-    public String BroadcastOrbit_2 (int prn, byte[] rawData){
+    public void HandleGPSsubframe(byte[] rawData){
+         /*
+        for (int i=0; i< GPSSubframe.size(); i++){
+            GPSSubframe[i] = rawData;
+        }
+          */
+        byte[] frame1 = rawData;
 
-        double cuc = (short) extractBits(CUC_INDEX, CUC_LENGTH, rawData) * POW_2_NEG_29;
 
-        double e = buildUnsigned32BitsWordFrom8And24Words(E_INDEX8, E_INDEX24, rawData) * POW_2_NEG_33;
 
-        double cus = (short) extractBits(CUS_INDEX, CUS_LENGTH, rawData) * POW_2_NEG_29;
-
-        double a = buildUnsigned32BitsWordFrom8And24Words(A_INDEX8, A_INDEX24, rawData) * POW_2_NEG_19;
-
-        String broadcastorbit_2 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",cuc, e , cus , a);
-
-        return broadcastorbit_2;
     }
 
-    public String BroadcastOrbit_3 (int prn, byte[] rawData){
-        double toe = extractBits(TOE_INDEX, TOE_LENGTH, rawData) * POW_2_4;
-        double toeScaled = toe * POW_2_4;
-
-        double cic = (short) extractBits(CIC_INDEX, CIC_LENGTH, rawData) * POW_2_NEG_29 ;
-
-        double o = (int) buildUnsigned32BitsWordFrom8And24Words(O_INDEX8, O_INDEX24, rawData) * POW_2_NEG_31 * Math.PI ;
-
-        double cis = (short) extractBits(CIS_INDEX, CIS_LENGTH, rawData)* POW_2_NEG_29;
-
-        String broadcastorbit_3 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E", toeScaled, cic , o , cis);
-
-        return broadcastorbit_3;
-    }
-
-    public String BroadcastOrbit_4 (int prn, byte[] rawData){
-        double i0 = (int) buildUnsigned32BitsWordFrom8And24Words(I0_INDEX8, I0_INDEX24, rawData)* POW_2_NEG_31 * Math.PI;
-
-        double crc = (short) extractBits(CRC_INDEX, CRC_LENGTH, rawData)* POW_2_NEG_5;
-
-        double o0 = (int) buildUnsigned32BitsWordFrom8And24Words(O0_INDEX8, O0_INDEX24, rawData)* POW_2_NEG_31 * Math.PI;
-
-        int odot = extractBits(ODOT_INDEX, ODOT_LENGTH, rawData);
-        double Omegadot = getTwoComplement(odot, ODOT_LENGTH)* POW_2_NEG_43 * Math.PI;
-
-        String broadcastorbit_4 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",i0, crc , o0 , Omegadot);
-
-        return broadcastorbit_4;
-    }
-
-    public String BroadcastOrbit_5 (int prn, byte[] rawData){
-        int idot = extractBits(IDOT_INDEX, IDOT_LENGTH, rawData);
-        double Idot = getTwoComplement(idot, IDOT_LENGTH)* POW_2_NEG_43 * Math.PI;
-
-        double CoL2 = 0;
-
-        int week = extractBits(WEEK_INDEX, WEEK_LENGTH, rawData);
-
-        double L2Pd = 0;
-
-        String broadcastorbit_5 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",Idot,CoL2, week,L2Pd);
-
-        return broadcastorbit_5;
-    }
-
-    public String BroadcastOrbit_6 (int prn, byte[] rawData){
-        int uraIndex = extractBits(URA_INDEX, URA_LENGTH, rawData);
-
-        int svHealth = extractBits(SV_HEALTH_INDEX, SV_HEALTH_LENGTH, rawData);
-
-        byte tgd = (byte) extractBits(TGD_INDEX, TGD_LENGTH, rawData);
-
-        int iodc = extractBits(IODC1_INDEX, IODC1_LENGTH, rawData) << 8;
-        iodc |= extractBits(IODC2_INDEX, IODC2_LENGTH, rawData);
-
-        String broadcastorbit_6 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",uraIndex,svHealth,tgd,iodc);
-
-        return broadcastorbit_6;
-    }
 
     public void handleFirstSubframe(int prn, byte[] rawData) {
         int iodc = extractBits(IODC1_INDEX, IODC1_LENGTH, rawData) << 8;
@@ -598,6 +547,112 @@ public class GnssNavigationConv {
             default:
                 return "UNKNOWN";
         }
+    }
+
+    public String Prn_Epoch_Sv_Clk (int prn, byte[] rawData){
+
+        int toc = extractBits(TOC_INDEX, TOC_LENGTH, rawData);
+        double tocScaled = toc * POW_2_4;
+
+        int af0 = extractBits(AF0_INDEX, AF0_LENGTH, rawData);
+        af0 = getTwoComplement(af0, AF0_LENGTH);
+
+        short af1 = (short) extractBits(AF1_INDEX, AF1_LENGTH, rawData);
+
+        byte af2 = (byte) extractBits(AF2_INDEX, AF2_LENGTH, rawData);
+
+        String prn_epoch_sv_clk = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",tocScaled,af0,af1,af2);
+
+        return prn_epoch_sv_clk;
+    }
+
+    public String BroadcastOrbit_1 (int prn, byte[] rawData){
+        double iode = extractBits(IODE1_INDEX, IODE_LENGTH, rawData);
+
+        double crs = (short) extractBits(CRS_INDEX, CRS_LENGTH, rawData) * POW_2_NEG_5;
+
+        double deltaN = (short) extractBits(DELTA_N_INDEX, DELTA_N_LENGTH, rawData) * POW_2_NEG_43 * Math.PI;
+
+        double m0 = (int) buildUnsigned32BitsWordFrom8And24Words(M0_INDEX8, M0_INDEX24, rawData) * POW_2_NEG_31 * Math.PI;
+
+        String broadcastorbit_1 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",iode,crs,deltaN,m0);
+
+        return broadcastorbit_1;
+    }
+
+    public String BroadcastOrbit_2 (int prn, byte[] rawData){
+
+        double cuc = (short) extractBits(CUC_INDEX, CUC_LENGTH, rawData) * POW_2_NEG_29;
+
+        double e = buildUnsigned32BitsWordFrom8And24Words(E_INDEX8, E_INDEX24, rawData) * POW_2_NEG_33;
+
+        double cus = (short) extractBits(CUS_INDEX, CUS_LENGTH, rawData) * POW_2_NEG_29;
+
+        double a = buildUnsigned32BitsWordFrom8And24Words(A_INDEX8, A_INDEX24, rawData) * POW_2_NEG_19;
+
+        String broadcastorbit_2 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",cuc, e , cus , a);
+
+        return broadcastorbit_2;
+    }
+
+    public String BroadcastOrbit_3 (int prn, byte[] rawData){
+        double toe = extractBits(TOE_INDEX, TOE_LENGTH, rawData) * POW_2_4;
+        double toeScaled = toe * POW_2_4;
+
+        double cic = (short) extractBits(CIC_INDEX, CIC_LENGTH, rawData) * POW_2_NEG_29 ;
+
+        double o = (int) buildUnsigned32BitsWordFrom8And24Words(O_INDEX8, O_INDEX24, rawData) * POW_2_NEG_31 * Math.PI ;
+
+        double cis = (short) extractBits(CIS_INDEX, CIS_LENGTH, rawData)* POW_2_NEG_29;
+
+        String broadcastorbit_3 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E", toeScaled, cic , o , cis);
+
+        return broadcastorbit_3;
+    }
+
+    public String BroadcastOrbit_4 (int prn, byte[] rawData){
+        double i0 = (int) buildUnsigned32BitsWordFrom8And24Words(I0_INDEX8, I0_INDEX24, rawData)* POW_2_NEG_31 * Math.PI;
+
+        double crc = (short) extractBits(CRC_INDEX, CRC_LENGTH, rawData)* POW_2_NEG_5;
+
+        double o0 = (int) buildUnsigned32BitsWordFrom8And24Words(O0_INDEX8, O0_INDEX24, rawData)* POW_2_NEG_31 * Math.PI;
+
+        int odot = extractBits(ODOT_INDEX, ODOT_LENGTH, rawData);
+        double Omegadot = getTwoComplement(odot, ODOT_LENGTH)* POW_2_NEG_43 * Math.PI;
+
+        String broadcastorbit_4 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",i0, crc , o0 , Omegadot);
+
+        return broadcastorbit_4;
+    }
+
+    public String BroadcastOrbit_5 (int prn, byte[] rawData){
+        int idot = extractBits(IDOT_INDEX, IDOT_LENGTH, rawData);
+        double Idot = getTwoComplement(idot, IDOT_LENGTH)* POW_2_NEG_43 * Math.PI;
+
+        double CoL2 = 0;
+
+        int week = extractBits(WEEK_INDEX, WEEK_LENGTH, rawData);
+
+        double L2Pd = 0;
+
+        String broadcastorbit_5 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",Idot,CoL2, week,L2Pd);
+
+        return broadcastorbit_5;
+    }
+
+    public String BroadcastOrbit_6 (int prn, byte[] rawData){
+        int uraIndex = extractBits(URA_INDEX, URA_LENGTH, rawData);
+
+        int svHealth = extractBits(SV_HEALTH_INDEX, SV_HEALTH_LENGTH, rawData);
+
+        byte tgd = (byte) extractBits(TGD_INDEX, TGD_LENGTH, rawData);
+
+        int iodc = extractBits(IODC1_INDEX, IODC1_LENGTH, rawData) << 8;
+        iodc |= extractBits(IODC2_INDEX, IODC2_LENGTH, rawData);
+
+        String broadcastorbit_6 = String.format("    %1.12E,%1.12E,%1.12E,%1.12E",uraIndex,svHealth,tgd,iodc);
+
+        return broadcastorbit_6;
     }
 
 }

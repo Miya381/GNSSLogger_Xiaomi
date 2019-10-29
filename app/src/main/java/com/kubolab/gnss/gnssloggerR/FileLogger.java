@@ -991,11 +991,13 @@ public class FileLogger implements GnssListener {
                 builder.append(RECORD_DELIMITER);
                 builder.append(navigationMessage.getSubmessageId());
                 byte[] data = navigationMessage.getData();
-                //for (byte word : data) {
+
+                for (byte word : data) {
                 builder.append(data);
                 builder.append(RECORD_DELIMITER);
-                   // builder.append(word);
-                //}
+                builder.append(word);
+                }
+
                 try {
                     mFileNavWriter.write(builder.toString());
                     mFileNavWriter.newLine();
@@ -2320,7 +2322,7 @@ public class FileLogger implements GnssListener {
                                 index = index + 235;
                             }
                             if(!SettingsFragment.usePseudorangeRate && measurement.getAccumulatedDeltaRangeState() != GnssMeasurement.ADR_STATE_VALID){
-                                CURRENT_SMOOTHER_RATE[index] = 0.99;
+                                CURRENT_SMOOTHER_RATE[index] = 1.0;
                             }
                             //Pseudorange Smoother
                             if(SettingsFragment.usePseudorangeSmoother &&  prm != 0.0){
@@ -2328,6 +2330,7 @@ public class FileLogger implements GnssListener {
                                     if(SettingsFragment.usePseudorangeRate){
                                         LAST_SMOOTHED_PSEUDORANGE[index] = CURRENT_SMOOTHER_RATE[index] * prm + (1 - CURRENT_SMOOTHER_RATE[index]) * (LAST_SMOOTHED_PSEUDORANGE[index] + measurement.getPseudorangeRateMetersPerSecond());
                                         C1C = String.format("%14.3f%s%s", LAST_SMOOTHED_PSEUDORANGE[index], " ", " ");
+
                                     }else {
                                         if(measurement.getAccumulatedDeltaRangeState() == GnssMeasurement.ADR_STATE_VALID){
                                             LAST_SMOOTHED_PSEUDORANGE[index] = CURRENT_SMOOTHER_RATE[index] * prm + (1 - CURRENT_SMOOTHER_RATE[index]) * (LAST_SMOOTHED_PSEUDORANGE[index] + measurement.getAccumulatedDeltaRangeMeters() - LAST_DELTARANGE[index]);
@@ -2341,6 +2344,7 @@ public class FileLogger implements GnssListener {
                                     }
                                 }
                             }
+
                             String D1C = String.format("%14.3f%s%s", -measurement.getPseudorangeRateMetersPerSecond() / GPS_L1_WAVELENGTH, " ", " ");
                             String S1C = String.format("%14.3f%s%s", measurement.getCn0DbHz(), " ", " ");
 
