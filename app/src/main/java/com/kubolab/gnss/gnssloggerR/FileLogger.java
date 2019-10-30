@@ -975,8 +975,6 @@ public class FileLogger implements GnssListener {
                 if(mFileNavWriter == null){
                     return;
                 }
-
-
                 StringBuilder builder = new StringBuilder("Nav");
                 builder.append(RECORD_DELIMITER);
                 builder.append(navigationMessage.getSvid());
@@ -997,7 +995,6 @@ public class FileLogger implements GnssListener {
                 builder.append(RECORD_DELIMITER);
                 builder.append(word);
                 }
-
                 try {
                     mFileNavWriter.write(builder.toString());
                     mFileNavWriter.newLine();

@@ -188,10 +188,10 @@ public class GnssNavigationConv {
          if (status == 1){
              switch(type){
                  case TYPE_GPS_L1CA:
-                     Handlesubframe(prn,subframe,rawData);
+                     handleSubframeElement(prn,subframe,rawData);
                      break;
                  case TYPE_GPS_L5CA:
-                     Handlesubframe(prn,subframe,rawData);
+                     handleSubframeElement(prn,subframe,rawData);
                      break;
                  default:
 
@@ -200,84 +200,127 @@ public class GnssNavigationConv {
     }
 
     //各フレームごとにRINEXフォーマットに並びかえる
-    public void Handlesubframe (int prn, int subframe, byte[] rawData){
+    public void handleSubframeElement (int prn, int subframe, byte[] rawData){
          switch (subframe){
              case 1:
+                 String[] iodc1 = extractData(IODC1_INDEX,IODC1_LENGTH,handleGPSsubframe123(rawData));
+                 String[] iodc2 = extractData(IODC2_INDEX,IODC2_LENGTH,handleGPSsubframe123(rawData));
+                 String[] week = extractData(WEEK_INDEX,WEEK_LENGTH,handleGPSsubframe123(rawData));
+                 String[] uraIndex = extractData(URA_INDEX,URA_LENGTH,handleGPSsubframe123(rawData));
+                 String[] svHealth = extractData(SV_HEALTH_INDEX,SV_HEALTH_LENGTH,handleGPSsubframe123(rawData));
+                 String[] tgd = extractData(TGD_INDEX,TGD_LENGTH,handleGPSsubframe123(rawData));
+                 String[] toc = extractData(TOC_INDEX,TOC_LENGTH,handleGPSsubframe123(rawData));
+                 String[] af2 = extractData(AF2_INDEX,AF2_LENGTH,handleGPSsubframe123(rawData));
+                 String[] af1 = extractData(AF1_INDEX,AF1_LENGTH,handleGPSsubframe123(rawData));
+                 String[] af0 = extractData(AF0_INDEX,AF0_LENGTH,handleGPSsubframe123(rawData));
                  break;
              case 2:
+                 /*
+                 String[] iode1 = extractData(IODE1_INDEX,IODE_LENGTH,handleGPSsubframe123(rawData));
+                 String[] crs = extractData(CRS_INDEX,CRS_LENGTH,handleGPSsubframe123(rawData));
+                 String[] deltaN = extractData(DELTA_N_INDEX,DELTA_N_LENGTH,handleGPSsubframe123(rawData));
+                 String[] mo1 = extractData(M0_INDEX8,8,handleGPSsubframe123(rawData));
+                 String[] mo2 = extractData(M0_INDEX24,24,handleGPSsubframe123(rawData));
+                 String[] cuc = extractData(CUC_INDEX,CUC_LENGTH,handleGPSsubframe123(rawData));
+                 String[] tgd = extractData(TGD_INDEX,TGD_LENGTH,handleGPSsubframe123(rawData));
+                 String[] toc = extractData(TOC_INDEX,TOC_LENGTH,handleGPSsubframe123(rawData));
+                 String[] af2 = extractData(AF2_INDEX,AF2_LENGTH,handleGPSsubframe123(rawData));
+                 String[] af1 = extractData(AF1_INDEX,AF1_LENGTH,handleGPSsubframe123(rawData));
+                 String[] af0 = extractData(AF0_INDEX,AF0_LENGTH,handleGPSsubframe123(rawData));
+
+                  */
                  break;
              case 3:
+                 /*
+                 String[] iodc1 = extractData(IODC1_INDEX,IODC1_LENGTH,handleGPSsubframe123(rawData));
+                 String[] iodc2 = extractData(IODC2_INDEX,IODC2_LENGTH,handleGPSsubframe123(rawData));
+                 String[] week = extractData(WEEK_INDEX,WEEK_LENGTH,handleGPSsubframe123(rawData));
+                 String[] uraIndex = extractData(URA_INDEX,URA_LENGTH,handleGPSsubframe123(rawData));
+                 String[] svHealth = extractData(SV_HEALTH_INDEX,SV_HEALTH_LENGTH,handleGPSsubframe123(rawData));
+                 String[] tgd = extractData(TGD_INDEX,TGD_LENGTH,handleGPSsubframe123(rawData));
+                 String[] toc = extractData(TOC_INDEX,TOC_LENGTH,handleGPSsubframe123(rawData));
+                 String[] af2 = extractData(AF2_INDEX,AF2_LENGTH,handleGPSsubframe123(rawData));
+                 String[] af1 = extractData(AF1_INDEX,AF1_LENGTH,handleGPSsubframe123(rawData));
+                 String[] af0 = extractData(AF0_INDEX,AF0_LENGTH,handleGPSsubframe123(rawData));
+
+                  */
                  break;
              default:
          }
     }
 
     //衛星システムごとにNavigationMessageを取得
-    public void HandleGPSsubframe(int subframe, byte[] rawData){
+    public String[] handleGPSsubframe123(byte[] rawData){
         byte[] GPSsubframe = rawData;
-         switch (subframe) {
-             case 1:
-                 /*
-                 int word1 = GPSsubframe[0] + GPSsubframe[1] + GPSsubframe[2] + GPSsubframe[3];
-                 int word2 = GPSsubframe[4] + GPSsubframe[5] + GPSsubframe[6] + GPSsubframe[7];
-                 int word3 = GPSsubframe[8] + GPSsubframe[9] + GPSsubframe[10] + GPSsubframe[11];
-                 int word4 = GPSsubframe[12] + GPSsubframe[13] + GPSsubframe[14] + GPSsubframe[15];
-                 int word5 = GPSsubframe[16] + GPSsubframe[17] + GPSsubframe[18] + GPSsubframe[19];
-                 int word6 = GPSsubframe[20] + GPSsubframe[21] + GPSsubframe[22] + GPSsubframe[23];
-                 int word7 = GPSsubframe[24] + GPSsubframe[25] + GPSsubframe[26] + GPSsubframe[27];
-                 int word8 = GPSsubframe[28] + GPSsubframe[29] + GPSsubframe[30] + GPSsubframe[31];
-                 int word9 = GPSsubframe[32] + GPSsubframe[33] + GPSsubframe[34] + GPSsubframe[35];
-                 int word10 = GPSsubframe[36] + GPSsubframe[37] + GPSsubframe[38] + GPSsubframe[39];
 
-                  */
+            //各ワードごとに変換(32ビットから30ビットに変換)
+            String Biword1 = toBinaryString1(GPSsubframe[0]) + toBinaryString1(GPSsubframe[1]) + toBinaryString1(GPSsubframe[2]) + toBinaryString2(GPSsubframe[3]);
+            String Biword2 = toBinaryString1(GPSsubframe[4]) + toBinaryString1(GPSsubframe[5]) + toBinaryString1(GPSsubframe[6]) + toBinaryString2(GPSsubframe[7]);
+            String Biword3 = toBinaryString1(GPSsubframe[8]) + toBinaryString1(GPSsubframe[9]) + toBinaryString1(GPSsubframe[10]) + toBinaryString2(GPSsubframe[11]);
+            String Biword4 = toBinaryString1(GPSsubframe[12]) + toBinaryString1(GPSsubframe[13]) + toBinaryString1(GPSsubframe[14]) + toBinaryString2(GPSsubframe[15]);
+            String Biword5 = toBinaryString1(GPSsubframe[16]) + toBinaryString1(GPSsubframe[17]) + toBinaryString1(GPSsubframe[18]) + toBinaryString2(GPSsubframe[19]);
+            String Biword6 = toBinaryString1(GPSsubframe[20]) + toBinaryString1(GPSsubframe[21]) + toBinaryString1(GPSsubframe[22]) + toBinaryString2(GPSsubframe[23]);
+            String Biword7 = toBinaryString1(GPSsubframe[24]) + toBinaryString1(GPSsubframe[25]) + toBinaryString1(GPSsubframe[26]) + toBinaryString2(GPSsubframe[27]);
+            String Biword8 = toBinaryString1(GPSsubframe[28]) + toBinaryString1(GPSsubframe[29]) + toBinaryString1(GPSsubframe[30]) + toBinaryString2(GPSsubframe[31]);
+            String Biword9 = toBinaryString1(GPSsubframe[32]) + toBinaryString1(GPSsubframe[33]) + toBinaryString1(GPSsubframe[34]) + toBinaryString2(GPSsubframe[35]);
+            String Biword10 = toBinaryString1(GPSsubframe[36]) + toBinaryString1(GPSsubframe[37]) + toBinaryString1(GPSsubframe[38]) + toBinaryString2(GPSsubframe[39]);
 
-                 //各ワードごとに変換
-                 String Biword1 = Decimal2Binary(GPSsubframe[0])+ Decimal2Binary(GPSsubframe[1])+ Decimal2Binary(GPSsubframe[2]) + Decimal2Binary(GPSsubframe[3]);
-                 String Biword2 = Decimal2Binary(GPSsubframe[4])+ Decimal2Binary(GPSsubframe[5])+ Decimal2Binary(GPSsubframe[6]) + Decimal2Binary(GPSsubframe[7]);
-                 String Biword3 = Decimal2Binary(GPSsubframe[8])+ Decimal2Binary(GPSsubframe[9])+ Decimal2Binary(GPSsubframe[10]) + Decimal2Binary(GPSsubframe[11]);
-                 String Biword4 = Decimal2Binary(GPSsubframe[12])+ Decimal2Binary(GPSsubframe[13])+ Decimal2Binary(GPSsubframe[14]) + Decimal2Binary(GPSsubframe[15]);
-                 String Biword5 = Decimal2Binary(GPSsubframe[16])+ Decimal2Binary(GPSsubframe[17])+ Decimal2Binary(GPSsubframe[18]) + Decimal2Binary(GPSsubframe[19]);
-                 String Biword6 = Decimal2Binary(GPSsubframe[20])+ Decimal2Binary(GPSsubframe[21])+ Decimal2Binary(GPSsubframe[22]) + Decimal2Binary(GPSsubframe[23]);
-                 String Biword7 = Decimal2Binary(GPSsubframe[24])+ Decimal2Binary(GPSsubframe[25])+ Decimal2Binary(GPSsubframe[26]) + Decimal2Binary(GPSsubframe[27]);
-                 String Biword8 = Decimal2Binary(GPSsubframe[28])+ Decimal2Binary(GPSsubframe[29])+ Decimal2Binary(GPSsubframe[30]) + Decimal2Binary(GPSsubframe[31]);
-                 String Biword9 = Decimal2Binary(GPSsubframe[32])+ Decimal2Binary(GPSsubframe[33])+ Decimal2Binary(GPSsubframe[34]) + Decimal2Binary(GPSsubframe[35]);
-                 String Biword10 = Decimal2Binary(GPSsubframe[36])+ Decimal2Binary(GPSsubframe[37])+ Decimal2Binary(GPSsubframe[38]) + Decimal2Binary(GPSsubframe[39]);
-
-                 String subframe1 = Biword1 + Biword2 + Biword3 + Biword4 + Biword5 + Biword6 + Biword7 + Biword8 + Biword9 + Biword10;
-                 int binary = Integer.parseInt(subframe1);
-                 break;
-             case 2:
-
-                 break;
-             case 3:
-
-                 break;
-             default:
-
-         }
-
-
-
+            //300ビットに結合(Binary)
+            String subframe1 = Biword1 + Biword2 + Biword3 + Biword4 + Biword5 + Biword6 + Biword7 + Biword8 + Biword9 + Biword10;
+            String[] NavMsg = subframe1.split("");
+            return NavMsg;
     }
 
-    public String Decimal2Binary(byte decimal1){
-        int decimal2 = decimal1;
-        String numstr = "";
+    public String[] extractData(int index, int length, String[] data){
+         String[] result = new String[length];
+         int Index = index + 1;
+         for (int i = 0; i < length; i++){
+             int workingIndex = Index + i;
+             result [i] = data[workingIndex];
+         }
+         return result;
+    }
 
-        while (decimal2 > 0) {
-            int rem = decimal2  % 2;
+    public int[] string2int(String[] sa){
+        int[] ia = new int[sa.length];
+        for (int i = 0; i < sa.length; i++) {
+            ia[i] = Integer.parseInt(sa[i]); // throws NumberFormatException
+        }
+        return ia;
+    }
 
-            if (rem == 1) {
-                numstr = "1" + numstr;
-            } else {
-                numstr = "0" + numstr;
-            }
-            decimal2  = decimal2  / 2;
+    public String toBinaryString1(byte b) {
+        int[] i = new int[8];
+        StringBuffer bs = new StringBuffer();
+        i[0] = (b & 0x80) >>> 7;
+        i[1] = (b & 0x40) >>> 6;
+        i[2] = (b & 0x20) >>> 5;
+        i[3] = (b & 0x10) >>> 4;
+        i[4] = (b & 0x08) >>> 3;
+        i[5] = (b & 0x04) >>> 2;
+        i[6] = (b & 0x02) >>> 1;
+        i[7] = (b & 0x01) >>> 0;
+        for (int j = 0; j < 8; j++) {
+            bs.append(i[j]);
         }
-        if(decimal1 == 0){
-            numstr = "0";
+        return bs.toString();
+    }
+
+    public String toBinaryString2(byte b) {
+        int[] i = new int[6];
+        StringBuffer bs = new StringBuffer();
+        i[0] = (b & 0x80) >>> 7;
+        i[1] = (b & 0x40) >>> 6;
+        i[2] = (b & 0x20) >>> 5;
+        i[3] = (b & 0x10) >>> 4;
+        i[4] = (b & 0x08) >>> 3;
+        i[5] = (b & 0x04) >>> 2;
+        i[6] = (b & 0x02) >>> 1;
+        i[7] = (b & 0x01) >>> 0;
+        for (int j = 0; j < 6; j++) {
+            bs.append(i[j]);
         }
-        return numstr;
+        return bs.toString();
     }
 
 
