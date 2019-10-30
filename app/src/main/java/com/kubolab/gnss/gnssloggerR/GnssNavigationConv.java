@@ -10,11 +10,13 @@ import android.util.Log;
 import android.location.GnssNavigationMessage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 
 /**
  * Created by KuboLab on 2017/12/04.
+ * Continue now
  */
 
 //テスト
@@ -183,7 +185,7 @@ public class GnssNavigationConv {
             return state;
     }
 
-    //NavigationMessageメインメソッド
+    //NavigationMessageメインメソッド(RINEXフォーマットに並びかえる)
     public void getNavagationMessage (int prn,int status, int type, int page, int subframe, byte[] rawData){
          if (status == 1){
              switch(type){
@@ -199,7 +201,7 @@ public class GnssNavigationConv {
          }
     }
 
-    //各フレームごとにRINEXフォーマットに並びかえる
+    //各フレームごとに格納する
     public void handleSubframeElement (int prn, int subframe, byte[] rawData){
          switch (subframe){
              case 1:
@@ -213,37 +215,70 @@ public class GnssNavigationConv {
                  String[] af2 = extractData(AF2_INDEX,AF2_LENGTH,handleGPSsubframe123(rawData));
                  String[] af1 = extractData(AF1_INDEX,AF1_LENGTH,handleGPSsubframe123(rawData));
                  String[] af0 = extractData(AF0_INDEX,AF0_LENGTH,handleGPSsubframe123(rawData));
+
+                 int WN = string2intDecimal(week);
+                 int URA_INDEX = string2intDecimal(uraIndex);
+                 int SV_HEALTH = string2intDecimal(svHealth);
+                 int IODC = connectString(iodc1, iodc2);
+                 double Tgd = getTwosComplement(string2intBinary(tgd))* POW_2_NEG_31;
+                 double Toc = string2intDecimal(toc) * POW_2_4;
+                 double Af2 = getTwosComplement(string2intBinary(af2))* POW_2_NEG_55;
+                 double Af1 = getTwosComplement(string2intBinary(af1))* POW_2_NEG_43;
+                 double Af0 = getTwosComplement(string2intBinary(af0))* POW_2_NEG_31;
+
                  break;
              case 2:
-                 /*
+
                  String[] iode1 = extractData(IODE1_INDEX,IODE_LENGTH,handleGPSsubframe123(rawData));
                  String[] crs = extractData(CRS_INDEX,CRS_LENGTH,handleGPSsubframe123(rawData));
                  String[] deltaN = extractData(DELTA_N_INDEX,DELTA_N_LENGTH,handleGPSsubframe123(rawData));
-                 String[] mo1 = extractData(M0_INDEX8,8,handleGPSsubframe123(rawData));
-                 String[] mo2 = extractData(M0_INDEX24,24,handleGPSsubframe123(rawData));
+                 String[] m01 = extractData(M0_INDEX8,8,handleGPSsubframe123(rawData));
+                 String[] m02 = extractData(M0_INDEX24,24,handleGPSsubframe123(rawData));
                  String[] cuc = extractData(CUC_INDEX,CUC_LENGTH,handleGPSsubframe123(rawData));
-                 String[] tgd = extractData(TGD_INDEX,TGD_LENGTH,handleGPSsubframe123(rawData));
-                 String[] toc = extractData(TOC_INDEX,TOC_LENGTH,handleGPSsubframe123(rawData));
-                 String[] af2 = extractData(AF2_INDEX,AF2_LENGTH,handleGPSsubframe123(rawData));
-                 String[] af1 = extractData(AF1_INDEX,AF1_LENGTH,handleGPSsubframe123(rawData));
-                 String[] af0 = extractData(AF0_INDEX,AF0_LENGTH,handleGPSsubframe123(rawData));
+                 String[] e1 = extractData(E_INDEX8,8,handleGPSsubframe123(rawData));
+                 String[] e2 = extractData(E_INDEX24,24,handleGPSsubframe123(rawData));
+                 String[] cus = extractData(CUS_INDEX,CUS_LENGTH,handleGPSsubframe123(rawData));
+                 String[] a1 = extractData(A_INDEX8,8,handleGPSsubframe123(rawData));
+                 String[] a2 = extractData(A_INDEX24,24,handleGPSsubframe123(rawData));
+                 String[] toe = extractData(TOE_INDEX,TOE_LENGTH,handleGPSsubframe123(rawData));
+                 String[] fit_interval = extractData(287,1,handleGPSsubframe123(rawData));
 
-                  */
+                 double CRS = getTwosComplement(string2intBinary(crs))* POW_2_NEG_5;
+                 double DELTA_N = getTwosComplement(string2intBinary(deltaN))* POW_2_NEG_43;
+                 double M0 = getTwosComplement(connectString2(m01,m02)) * POW_2_NEG_31;
+                 double CUC = getTwosComplement(string2intBinary(cuc))* POW_2_NEG_29;
+                 double E = connectString(e1,e2) * POW_2_NEG_33;
+                 double CUS = getTwosComplement(string2intBinary(cus))* POW_2_NEG_29;
+                 double A = connectString(a1,a2) * POW_2_NEG_19;
+                 double TOE = string2intDecimal(toe) * POW_2_4;
+                 int FIT = string2intDecimal(fit_interval);
+
                  break;
              case 3:
-                 /*
-                 String[] iodc1 = extractData(IODC1_INDEX,IODC1_LENGTH,handleGPSsubframe123(rawData));
-                 String[] iodc2 = extractData(IODC2_INDEX,IODC2_LENGTH,handleGPSsubframe123(rawData));
-                 String[] week = extractData(WEEK_INDEX,WEEK_LENGTH,handleGPSsubframe123(rawData));
-                 String[] uraIndex = extractData(URA_INDEX,URA_LENGTH,handleGPSsubframe123(rawData));
-                 String[] svHealth = extractData(SV_HEALTH_INDEX,SV_HEALTH_LENGTH,handleGPSsubframe123(rawData));
-                 String[] tgd = extractData(TGD_INDEX,TGD_LENGTH,handleGPSsubframe123(rawData));
-                 String[] toc = extractData(TOC_INDEX,TOC_LENGTH,handleGPSsubframe123(rawData));
-                 String[] af2 = extractData(AF2_INDEX,AF2_LENGTH,handleGPSsubframe123(rawData));
-                 String[] af1 = extractData(AF1_INDEX,AF1_LENGTH,handleGPSsubframe123(rawData));
-                 String[] af0 = extractData(AF0_INDEX,AF0_LENGTH,handleGPSsubframe123(rawData));
 
-                  */
+                 String[] cic = extractData(CIC_INDEX,CIC_LENGTH,handleGPSsubframe123(rawData));
+                 String[] Omega01 = extractData(O0_INDEX8,8,handleGPSsubframe123(rawData));
+                 String[] Omega02 = extractData(O0_INDEX24,24,handleGPSsubframe123(rawData));
+                 String[] cis = extractData(CIS_INDEX,CIS_LENGTH,handleGPSsubframe123(rawData));
+                 String[] i01 = extractData(I0_INDEX8,8,handleGPSsubframe123(rawData));
+                 String[] i02 = extractData(I0_INDEX24,24,handleGPSsubframe123(rawData));
+                 String[] crc = extractData(CRC_INDEX,CRC_LENGTH,handleGPSsubframe123(rawData));
+                 String[] omega1 = extractData(O_INDEX8,8,handleGPSsubframe123(rawData));
+                 String[] omega2 = extractData(O_INDEX24,24,handleGPSsubframe123(rawData));
+                 String[] Omegadot = extractData(ODOT_INDEX,ODOT_LENGTH,handleGPSsubframe123(rawData));
+                 String[] iode = extractData(IODE2_INDEX,IODE_LENGTH,handleGPSsubframe123(rawData));
+                 String[] idot = extractData(IDOT_INDEX,IDOT_LENGTH,handleGPSsubframe123(rawData));
+
+                 double CIC = getTwosComplement(string2intBinary(cic))* POW_2_NEG_29;
+                 double Omega0 = getTwosComplement(connectString2(Omega01,Omega02)) * POW_2_NEG_31;
+                 double CIS = getTwosComplement(string2intBinary(cis))* POW_2_NEG_29;
+                 double i0 = getTwosComplement(connectString2(i01,i02)) * POW_2_NEG_31;
+                 double CRC = getTwosComplement(string2intBinary(crc))* POW_2_NEG_5;
+                 double omega = getTwosComplement(connectString2(omega1,omega2)) * POW_2_NEG_31;
+                 double OMEGADOT = getTwosComplement(string2intBinary(Omegadot))* POW_2_NEG_43;
+                 double IODE = string2intDecimal(iode) * POW_2_4;
+                 double IDOT = getTwosComplement(string2intBinary(idot))* POW_2_NEG_43;
+
                  break;
              default:
          }
@@ -271,6 +306,53 @@ public class GnssNavigationConv {
             return NavMsg;
     }
 
+    //文字列の連結(2進数出力)
+    public int connectString2(String[] A1, String[] A2){
+        String ex = Arrays.toString(A1) + Arrays.toString(A2);
+        //2進数に変換
+        int result = Integer.parseInt(ex,2);
+        return result;
+    }
+
+    //文字列の連結(10進数出力)
+    public int connectString(String[] A1, String[] A2){
+         String ex = Arrays.toString(A1) + Arrays.toString(A2);
+         //10進数に変換
+         int result = Integer.parseInt(ex,2);
+         return result;
+    }
+
+    //Stringをintに変換(2進数出力)
+    public int string2intBinary (String[] data){
+        String ex = Arrays.toString(data);
+        //2進数に変換
+        int result = Integer.parseInt(ex);
+        return result;
+    }
+
+    //Stringをintに変換(10進数出力)
+    public int string2intDecimal (String[] data){
+         String ex = Arrays.toString(data);
+         //10進数に変換
+         int result = Integer.parseInt(ex,2);
+         return result;
+    }
+
+    //2進数⇒2補数⇒10進数変換
+    public int getTwosComplement(int val) {
+        // 2の補数を求める（再掲: 2の補数 = ビットを反転して1を足した値）
+        String invertedBinaryString = Integer.toBinaryString(~val) + 1;
+        // 10進数に変換
+        int twosComp = Integer.parseInt(invertedBinaryString,2);
+
+        // 元のビット列の最上位が1の場合, 2の補数にマイナスを掛ける
+        String binaryString = Integer.toBinaryString(val);
+        if(binaryString.startsWith("1")) twosComp *= -1;
+
+        return twosComp;
+    }
+
+
     public String[] extractData(int index, int length, String[] data){
          String[] result = new String[length];
          int Index = index + 1;
@@ -281,7 +363,8 @@ public class GnssNavigationConv {
          return result;
     }
 
-    public int[] string2int(String[] sa){
+    //String配列からint配列に変換
+    public int[] String2Int(String[] sa){
         int[] ia = new int[sa.length];
         for (int i = 0; i < sa.length; i++) {
             ia[i] = Integer.parseInt(sa[i]); // throws NumberFormatException
@@ -306,6 +389,7 @@ public class GnssNavigationConv {
         return bs.toString();
     }
 
+    //4バイト目に使用
     public String toBinaryString2(byte b) {
         int[] i = new int[6];
         StringBuffer bs = new StringBuffer();
