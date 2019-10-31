@@ -717,14 +717,19 @@ public class UiLogger implements GnssListener {
                     } else if (prSeconds < 0 || prSeconds > 0.5) {
                         array[arrayRow][1] = "INVALID_VALUE";
                         prm = 0.0;
+
+                        /*
                     }
                     else if (getStateName(measurement.getState()) == "1") {
                         array[arrayRow][1] = String.format("%14.3f", prm);
-                        CheckClockSync = true;
+
+                         */
+
                     }
                     else {
-                        //array[arrayRow][1] = getStateName(measurement.getState());
-                        array[arrayRow][1] = String.format("%14.3f", measurement.getPseudorangeRateMetersPerSecond());
+                        array[arrayRow][1] = getStateName2(measurement.getState());
+                        //array[arrayRow][1] = String.format("%14.3f", measurement.getPseudorangeRateMetersPerSecond());
+                        CheckClockSync = true;
                     }
 
             /*builder.append("GNSSClock = ").append(event.getClock().getTimeNanos()).append("\n");
@@ -733,6 +738,7 @@ public class UiLogger implements GnssListener {
             builder.append("PseudoRange = ").append(prm).append("\n");
             builder.append("tRxSeconds = ").append(tRxSeconds).append("\n");
             builder.append("tTxSeconds = ").append(tTxSeconds).append("\n");*/
+
 
                     //builder.append("FullCarrierCycles = ").append(measurement.getCarrierCycles() + measurement.getCarrierPhase()).append("\n");
                     if (SettingsFragment.CarrierPhase == true) {
@@ -774,6 +780,7 @@ public class UiLogger implements GnssListener {
                                 }
                             }
                         }
+
                         int index = measurement.getSvid();
                         if (measurement.getConstellationType() == GnssStatus.CONSTELLATION_GLONASS) {
                             index = index + 64;
@@ -808,7 +815,9 @@ public class UiLogger implements GnssListener {
                     } else {
                         array[arrayRow][2] = "0";
                     }
+
                     array[arrayRow][3] = String.format("%2.1f", measurement.getCn0DbHz());
+                    //array[arrayRow][3] = getStateName(measurement.getState());
 
                     /*
                     if (measurement.getMultipathIndicator() == GnssMeasurement.MULTIPATH_INDICATOR_DETECTED) {
@@ -906,6 +915,49 @@ public static double getDopplershift (float carrierFrequencyhz){
                 return "SBAS_SYNC";
             default:
                 return "1";
+        }
+    }
+
+    private String getStateName2(int id){
+        switch (id){
+            case GnssMeasurement.STATE_2ND_CODE_LOCK:
+                return "2ND_CODE_LOCK";
+            case GnssMeasurement.STATE_BDS_D2_BIT_SYNC:
+                return "BDS_D2_BIT_SYNC";
+            case GnssMeasurement.STATE_BDS_D2_SUBFRAME_SYNC:
+                return "BDS_D2_SUBFRAME_SYNC";
+            case GnssMeasurement.STATE_BIT_SYNC:
+                return "BIT_SYNC";
+            case GnssMeasurement.STATE_CODE_LOCK:
+                return "CODE_LOCK";
+            case GnssMeasurement.STATE_GAL_E1BC_CODE_LOCK:
+                return "GAL_E1BC_CODE_LOCK";
+            case GnssMeasurement.STATE_GAL_E1B_PAGE_SYNC:
+                return "GAL_E1B_PAGE_SYNC";
+            case GnssMeasurement.STATE_GAL_E1C_2ND_CODE_LOCK:
+                return "GAL_E1C_2ND_CODE_LOCK";
+            case GnssMeasurement.STATE_GLO_STRING_SYNC:
+                return "GLO_STRING_SYNC";
+            case GnssMeasurement.STATE_GLO_TOD_DECODED:
+                return "GLO_TOD_DECODED";
+            case GnssMeasurement.STATE_GLO_TOD_KNOWN:
+                return "GLO_TOD_KNOWN";
+            case GnssMeasurement.STATE_MSEC_AMBIGUOUS:
+                return "MSEC_AMBIGUOUS";
+            case GnssMeasurement.STATE_SBAS_SYNC:
+                return "SBAS_SYNC";
+            case GnssMeasurement.STATE_SUBFRAME_SYNC:
+                return "SUBFRAME_SYNC";
+            case GnssMeasurement.STATE_SYMBOL_SYNC:
+                return "SYMBOL_SYNC";
+            case GnssMeasurement.STATE_TOW_DECODED:
+                return "TOW_DECODED";
+            case GnssMeasurement.STATE_TOW_KNOWN:
+                return "TOW_KNOWN";
+            case GnssMeasurement.STATE_UNKNOWN:
+                return "UNKNOWN";
+            default:
+                return "OK";
         }
     }
 

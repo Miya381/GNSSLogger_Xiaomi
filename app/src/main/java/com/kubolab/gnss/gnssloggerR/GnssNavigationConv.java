@@ -323,6 +323,27 @@ public class GnssNavigationConv {
             return NavMsg;
     }
 
+    public String getNavType(int type){
+        switch (type){
+            case TYPE_GPS_L1CA:
+                return "G";
+            case TYPE_GPS_L5CA:
+                return "G";
+            case TYPE_BDS_D1:
+                return "C";
+            case TYPE_BDS_D2:
+                return "C";
+            case TYPE_GLO_L1CA:
+                return "R";
+            case TYPE_GAL_F:
+                return "E";
+            case TYPE_GAL_I:
+                return "E";
+            default:
+                return "UNKNOWN";
+        }
+    }
+
     //文字列の連結(2進数出力)
     public int connectString2(String[] A1, String[] A2){
         String ex = Arrays.toString(A1) + Arrays.toString(A2);
