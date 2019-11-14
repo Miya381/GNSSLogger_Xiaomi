@@ -318,6 +318,7 @@ public class FileLogger implements GnssListener {
                 return;
             }
 
+
             // initialize the contents of the file
             try {
 
@@ -800,6 +801,7 @@ public class FileLogger implements GnssListener {
                     return;
                 }
                 else{
+
                     try {
                         String locationStream =
                                 String.format(
@@ -832,9 +834,8 @@ public class FileLogger implements GnssListener {
                         //GPS週・週秒から年月日時分秒に変換
                         GPSWStoGPST gpswStoGPST = new GPSWStoGPST();
                         ReturnValue value = gpswStoGPST.method(weekNumber, tRxNanos * 1e-9);
+                        */
 
-
-                         */
                         String gnsstime=
                                 String.format("%d,%d,%d,%d,%d,%13.7f",gnsstimeclock_a,gnsstimeclock_b,gnsstimeclock_c,gnsstimeclock_d,gnsstimeclock_e,gnsstimeclock_f);
                         arrayList1.add(gnsstime);
@@ -2291,6 +2292,10 @@ public class FileLogger implements GnssListener {
                                 if(index < 300) {
                                     if(SettingsFragment.usePseudorangeRate){
                                         LAST_SMOOTHED_PSEUDORANGE[index] = CURRENT_SMOOTHER_RATE[index] * prm + (1 - CURRENT_SMOOTHER_RATE[index]) * (LAST_SMOOTHED_PSEUDORANGE[index] + measurement.getPseudorangeRateMetersPerSecond());
+                                        CURRENT_SMOOTHER_RATE[index] = CURRENT_SMOOTHER_RATE[index] - SMOOTHER_RATE;
+                                        if (CURRENT_SMOOTHER_RATE[index] <= 0) {
+                                            CURRENT_SMOOTHER_RATE[index] = SMOOTHER_RATE;
+                                        }
                                         C1C = String.format("%14.3f%s%s", LAST_SMOOTHED_PSEUDORANGE[index], " ", " ");
 
                                     }else {
