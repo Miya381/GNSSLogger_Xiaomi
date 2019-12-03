@@ -37,6 +37,7 @@ import java.util.TimerTask;
 
 //確認
 //aiueo
+//branch 確認
 public class FileLogger implements GnssListener {
 
     private static final String TAG = "FileLogger";
