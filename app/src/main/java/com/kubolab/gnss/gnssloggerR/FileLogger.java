@@ -1031,7 +1031,7 @@ public class FileLogger implements GnssListener {
     }
 
 
-    public void onSensorListener(String listener,float roll, float pitch, float azimuth,float accZ,float Altitude, float MagX,float MagY,float MagZ,float APIAzi){
+    public void onSensorListener(String listener,float roll, float pitch, float azimuth,float accZ,float Altitude, float AccX,float AccY,float AccZ,float APIAzi){
         synchronized (mFileAccAzLock) {
             if (mFileAccAzWriter == null || SettingsFragment.ResearchMode == false || !SettingsFragment.EnableSensorLog) {
 
@@ -1044,7 +1044,7 @@ public class FileLogger implements GnssListener {
                         double Pitchdeg = Math.toDegrees(pitch);
                         double Rolldeg = Math.toDegrees(roll);
                         String SensorStream =
-                                            String.format("%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)),(float) (1 * Math.cos(azimuth)),Altitude,Pitchdeg,Rolldeg,Azideg,accZ,MagX,MagY,MagZ,APIAzi);
+                                            String.format("%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", (float) (1 * Math.sin(azimuth)),(float) (1 * Math.cos(azimuth)),Altitude,Pitchdeg,Rolldeg,Azideg,accZ,AccX,AccY,AccZ,APIAzi);
 
                         /*
                         Timer timer = new Timer();

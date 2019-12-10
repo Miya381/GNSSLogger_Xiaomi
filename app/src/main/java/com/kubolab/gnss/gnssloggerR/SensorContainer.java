@@ -365,23 +365,25 @@ public class SensorContainer {
                 double ax = bx * Math.cos(mAzimuthZ) - by * Math.sin(mAzimuthZ);
                 double ay = bx * Math.sin(mAzimuthZ) + by * Math.cos(mAzimuthZ);
 
-                //ハイパスフィルタ
-                currentOrientationZValues = (float)az * 0.1f + currentOrientationZValues * (1.0f - 0.1f);
-                currentAccelerationZValues = (float)az - currentOrientationZValues;
+                //ローパスフィルタ
                 currentOrientationXValues = (float)ax * 0.1f + currentOrientationXValues * (1.0f - 0.1f);
-                currentAccelerationXValues = (float)ax - currentOrientationXValues;
                 currentOrientationYValues = (float)ay * 0.1f + currentOrientationYValues * (1.0f - 0.1f);
-                currentAccelerationYValues = (float)ay - currentOrientationYValues;
+                currentOrientationZValues = (float)az * 0.1f + currentOrientationZValues * (1.0f - 0.1f);
 
+                //ハイパスフィルタ
+                currentAccelerationXValues = (float)ax - currentOrientationXValues;
+                currentAccelerationYValues = (float)ay - currentOrientationYValues;
+                currentAccelerationZValues = (float)az - currentOrientationZValues;
 
                 //歩数カウンター z軸加速度-1.5になったとき歩数+1してる　状態falseに
                 if(passcounter == true) {
                     if (currentAccelerationZValues <= -1.5) {
                         counter++;
                         passcounter = false;
+
                         //　CSVファイル出力
                         final float APIAzi = radianToDegrees(orientationValues[0]);
-                        mFileLogger.onSensorListener("", (float) mPitchX, (float) mRollY, (float) mAzimuthZ, counter, Altitude, MagX, MagY, MagZ, APIAzi);
+                        mFileLogger.onSensorListener("", (float) mPitchX, (float) mRollY, (float) mAzimuthZ, counter, Altitude, RawX, RawY, RawZ, APIAzi);
 
                     }
                 }else{
