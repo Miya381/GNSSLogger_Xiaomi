@@ -765,6 +765,7 @@ public class FileLogger implements GnssListener {
                 return;
             }
         }
+
         if(SettingsFragment.RINEXNAVLOG){
             try {
                 mFileNavWriter.close();
@@ -1000,6 +1001,7 @@ public class FileLogger implements GnssListener {
 
                  */
 
+                /*
                 StringBuilder builder = new StringBuilder("Nav");
                 builder.append(RECORD_DELIMITER);
                 builder.append(navigationMessage.getSvid());
@@ -1026,6 +1028,9 @@ public class FileLogger implements GnssListener {
                 } catch (IOException e) {
                     logException(ERROR_WRITING_FILE, e);
                 }
+
+                 */
+
             }
         }
     }
@@ -2081,6 +2086,7 @@ public class FileLogger implements GnssListener {
                                     //Measurements.append(PrmStrings + DbHz );   //oFileの書き出し　コード擬似距離など
                                 }
                             }
+
                             if (Mathutil.fuzzyEquals(measurement.getCarrierFrequencyHz(), 115.0 * 10.23e6, TOLERANCE_MHZ)) {
 
                                 int checkflag = 1;
@@ -2133,6 +2139,7 @@ public class FileLogger implements GnssListener {
             }
 
         }
+
         else{    //2周波観測終了
 
             if(SettingsFragment.RINEX303){
@@ -2206,6 +2213,7 @@ public class FileLogger implements GnssListener {
                         //Log.d("DEVICE",DeviceName);
                         /*急場の変更！！*/
                         double prm = prSeconds * 2.99792458e8;
+
                         //コード擬似距離の計算
                         if (iRollover == false && prm > 0 && prSeconds < 0.5) {
                             if (firstOBS == true) {
@@ -2288,6 +2296,7 @@ public class FileLogger implements GnssListener {
                             if(!SettingsFragment.usePseudorangeRate && measurement.getAccumulatedDeltaRangeState() != GnssMeasurement.ADR_STATE_VALID){
                                 CURRENT_SMOOTHER_RATE[index] = 1.0;
                             }
+
                             //Pseudorange Smoother
                             if(SettingsFragment.usePseudorangeSmoother &&  prm != 0.0){
                                 if(index < 300) {

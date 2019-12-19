@@ -717,19 +717,14 @@ public class UiLogger implements GnssListener {
                     } else if (prSeconds < 0 || prSeconds > 0.5) {
                         array[arrayRow][1] = "INVALID_VALUE";
                         prm = 0.0;
-
-                        /*
                     }
                     else if (getStateName(measurement.getState()) == "1") {
                         array[arrayRow][1] = String.format("%14.3f", prm);
-
-                         */
-
+                        CheckClockSync = true;
                     }
                     else {
-                        array[arrayRow][1] = getStateName2(measurement.getState());
+                        array[arrayRow][1] = getStateName(measurement.getState());
                         //array[arrayRow][1] = String.format("%14.3f", measurement.getPseudorangeRateMetersPerSecond());
-                        CheckClockSync = true;
                     }
 
             /*builder.append("GNSSClock = ").append(event.getClock().getTimeNanos()).append("\n");
