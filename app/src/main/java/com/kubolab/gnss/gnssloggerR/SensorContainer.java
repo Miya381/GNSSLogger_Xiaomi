@@ -375,16 +375,15 @@ public class SensorContainer {
                 currentAccelerationYValues = (float)ay - currentOrientationYValues;
                 currentAccelerationZValues = (float)az - currentOrientationZValues;
 
+                //　CSVファイル出力
+                final float APIAzi = radianToDegrees(orientationValues[0]);
+                mFileLogger.onSensorListener("", (float) mPitchX, (float) mRollY, (float) mAzimuthZ, counter, Altitude, RawX, RawY, RawZ, APIAzi);
+
                 //歩数カウンター z軸加速度-1.5になったとき歩数+1してる　状態falseに
                 if(passcounter == true) {
                     if (currentAccelerationZValues <= -1.5) {
                         counter++;
                         passcounter = false;
-
-                        //　CSVファイル出力
-                        final float APIAzi = radianToDegrees(orientationValues[0]);
-                        mFileLogger.onSensorListener("", (float) mPitchX, (float) mRollY, (float) mAzimuthZ, counter, Altitude, RawX, RawY, RawZ, APIAzi);
-
                     }
                 }else{
                     //ｚ軸加速度1.0以上になった時状態trueに

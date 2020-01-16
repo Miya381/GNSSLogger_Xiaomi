@@ -38,6 +38,7 @@ import java.util.TimerTask;
 //確認
 //aiueo
 //branch 確認
+
 public class FileLogger implements GnssListener {
 
     private static final String TAG = "FileLogger";
@@ -124,9 +125,10 @@ public class FileLogger implements GnssListener {
         }
     }
 
-    /**
+    /*
      * Start a new file logging process.
      */
+
     public void startNewLog() {
         synchronized (mFileSubLock){
             File baseSubDirectory;
@@ -318,7 +320,6 @@ public class FileLogger implements GnssListener {
                 logException("Could not open observation file: " + currentFilePath, e);
                 return;
             }
-
 
             // initialize the contents of the file
             try {
@@ -753,6 +754,7 @@ public class FileLogger implements GnssListener {
                 }
             }
         }
+
         if(mFileNmeaWriter != null) {
             try {
                 mFileNmeaWriter.close();
