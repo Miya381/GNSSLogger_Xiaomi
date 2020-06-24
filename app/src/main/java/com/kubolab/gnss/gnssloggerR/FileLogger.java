@@ -358,7 +358,7 @@ public class FileLogger implements GnssListener {
                         currentFileWriter.write("     0                                                      RCV CLOCK OFFS APPL ");
                     currentFileWriter.newLine();
                     if(SettingsFragment.CarrierPhase){
-                        currentFileWriter.write("G    8 C1C L1C D5C S1C C5X L5X D5X S5X                      SYS / # / OBS TYPES ");
+                        currentFileWriter.write("G    8 C1C L1C D1C S1C C5X L5X D5X S5X                      SYS / # / OBS TYPES ");
                         currentFileWriter.newLine();
                     }else {
                         currentFileWriter.write("G    6 C1C D1C S1C C5X D5X S5X                              SYS / # / OBS TYPES ");
@@ -384,7 +384,7 @@ public class FileLogger implements GnssListener {
                     }
                     if(SettingsFragment.useGA){
                         if(SettingsFragment.CarrierPhase){
-                            currentFileWriter.write("E    8 C1X L1X D1X S1X C5X L5X D5X S5X                      SYS / # / OBS TYPES ");
+                            currentFileWriter.write("E    8 C1C L1C D1C S1C C5X L5X D5X S5X                      SYS / # / OBS TYPES ");
                             currentFileWriter.newLine();
                         }else {
                             currentFileWriter.write("E    4 C1X D1X S1X C5X D5X S5X                              SYS / # / OBS TYPES ");

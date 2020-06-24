@@ -41,7 +41,6 @@ public class UiLogger implements GnssListener {
     private static final double GPS_L1_WAVELENGTH = SPEED_OF_LIGHT/GPS_L1_FREQ;
     private static final double GPS_L5_WAVELENGTH = SPEED_OF_LIGHT/GPS_L5_FREQ;
 
-
     private static final int USED_COLOR = Color.rgb(0x4a, 0x5f, 0x70);
     private double trueAzimuth;
     private double Declination;

@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AndroidStudioProjects-GNSSLogger_Xiaomi.iml" filepath="$PROJECT_DIR$/AndroidStudioProjects-GNSSLogger_Xiaomi.iml" group="GNSSLogger_Xiaomi" />
       <module fileurl="file://$PROJECT_DIR$/GNSSLogger_Xiaomi.iml" filepath="$PROJECT_DIR$/GNSSLogger_Xiaomi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/GNSSLogger_Xiaomi-app.iml" filepath="$PROJECT_DIR$/app/GNSSLogger_Xiaomi-app.iml" group="GNSSLogger_Xiaomi/app" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
