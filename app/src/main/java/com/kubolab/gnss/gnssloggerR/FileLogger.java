@@ -981,7 +981,6 @@ public class FileLogger implements GnssListener {
                     return;
                 }
 
-                /*
                 GnssNavigationConv mGnssNavigationConv = new GnssNavigationConv();
                 StringBuilder builder = new StringBuilder("Nav");
                 builder.append(mGnssNavigationConv.getNavType(navigationMessage.getType()));
@@ -1001,9 +1000,8 @@ public class FileLogger implements GnssListener {
                     logException(ERROR_WRITING_FILE, e);
                 }
 
-                 */
 
-                /*
+/*
                 StringBuilder builder = new StringBuilder("Nav");
                 builder.append(RECORD_DELIMITER);
                 builder.append(navigationMessage.getSvid());
@@ -1031,7 +1029,9 @@ public class FileLogger implements GnssListener {
                     logException(ERROR_WRITING_FILE, e);
                 }
 
-                 */
+ */
+
+
 
             }
         }
